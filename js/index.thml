@@ -1,0 +1,104 @@
+// =========================================
+// FIREBASE MESSAGING SERVICE WORKER
+// =========================================
+// Ye file GitHub repo ke ROOT mein honi chahiye
+// index.html ke saath, same folder mein.
+// =========================================
+
+importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
+
+
+// =========================================
+// FIREBASE CONFIG
+// =========================================
+// IMPORTANT: service worker mein "compat" SDK use hota hai.
+// Values wahi hain jo index.html mein hain.
+// =========================================
+
+firebase.initializeApp({
+    apiKey: "AIzaSyAA-czBDazvHoNsPiQEvLWo2PYdhY-37oE",
+    authDomain: "mychat-f9042.firebaseapp.com",
+    projectId: "mychat-f9042",
+    storageBucket: "mychat-f9042.firebasestorage.app",
+    messagingSenderId: "293067062135",
+    appId: "1:293067062135:web:b3746da488d4145436ff72"
+});
+
+
+const messaging = firebase.messaging();
+
+
+// =========================================
+// BACKGROUND MESSAGE HANDLER
+// =========================================
+// Jab app background mein ho (tab band but browser khula),
+// message yahan aata hai aur notification dikhata hai.
+// =========================================
+
+messaging.onBackgroundMessage((payload) => {
+    console.log("[SW] Background message received:", payload);
+
+    const data = payload.data || {};
+    const notification = payload.notification || {};
+
+    const title = notification.title || data.title || "New message";
+    const body = notification.body || data.body || "";
+
+    const notificationOptions = {
+        body: body,
+        icon: data.icon || "/icon-192.png",
+        badge: "/icon-192.png",
+        tag: data.chatId || "messenger-notification",
+        data: {
+            chatId: data.chatId || "",
+            otherUid: data.otherUid || "",
+            click_action: data.click_action || "/"
+        },
+        requireInteraction: false
+    };
+
+    return self.registration.showNotification(title, notificationOptions);
+});
+
+
+// =========================================
+// NOTIFICATION CLICK HANDLER
+// =========================================
+// Jab user notification pe click kare,
+// app khule aur us chat pe le jaye.
+// =========================================
+
+self.addEventListener("notificationclick", (event) => {
+    event.notification.close();
+
+    const data = event.notification.data || {};
+    const otherUid = data.otherUid || "";
+
+    // Target URL — app root, plus query param for chat
+    const urlToOpen = new URL("/", self.location.origin);
+    if (otherUid) {
+        urlToOpen.searchParams.set("openChat", otherUid);
+    }
+
+    event.waitUntil(
+        clients.matchAll({ type: "window", includeUncontrolled: true })
+            .then((windowClients) => {
+                // If app already open, focus it
+                for (const client of windowClients) {
+                    if (client.url.startsWith(self.location.origin)) {
+                        client.focus();
+                        client.postMessage({
+                            type: "OPEN_CHAT",
+                            otherUid: otherUid
+                        });
+                        return;
+                    }
+                }
+                // Otherwise open new window
+                if (clients.openWindow) {
+                    return clients.openWindow(urlToOpen.toString());
+                }
+            })
+    );
+});
