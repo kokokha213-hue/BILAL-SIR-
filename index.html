@@ -1218,6 +1218,26 @@ const firebaseConfig = {
 
 const VAPID_KEY = "BItHwlwddFPALRtTCwdehJRafK7bPTbqugi-aUL0OkAM4IgC-ACFljTyCJDoAbWHimTBsH816WY-_pya1FZbwWg";
 
+// Auto-detect service worker path based on current location
+// Handles both root ("/") and subfolder ("/BILAL-SIR-/") deployments
+const SW_PATH = (() => {
+    const path = window.location.pathname;
+    // If URL ends with /something/ or /something/index.html, use that as base
+    // e.g. /BILAL-SIR-/ → /BILAL-SIR-/firebase-messaging-sw.js
+    // e.g. / → /firebase-messaging-sw.js
+    const base = path.replace(/\/[^\/]*$/, "/");
+    return base + "firebase-messaging-sw.js";
+})();
+
+const SW_SCOPE = (() => {
+    const path = window.location.pathname;
+    const base = path.replace(/\/[^\/]*$/, "/");
+    return base + "firebase-cloud-messaging-push-scope";
+})();
+
+console.log("[Config] SW path:", SW_PATH);
+console.log("[Config] SW scope:", SW_SCOPE);
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -1509,7 +1529,6 @@ async function initMessaging() {
         }
         messaging = getMessaging(app);
 
-        // Foreground message handler (jab tab active ho)
         onMessage(messaging, (payload) => {
             console.log("Foreground message:", payload);
 
@@ -1519,7 +1538,6 @@ async function initMessaging() {
 
             showForegroundNotification(title, body, data);
 
-            // In-app update: agar ye message current chat ka hai, mark read
             if (data.chatId && data.chatId === currentChatId) {
                 markChatAsRead(currentChatId);
             }
@@ -1534,7 +1552,7 @@ async function initMessaging() {
 
 function showForegroundNotification(title, body, data) {
     if (!("Notification" in window) || Notification.permission !== "granted") return;
-    if (document.visibilityState === "visible") return; // don't spam when tab is active
+    if (document.visibilityState === "visible") return;
 
     const notification = new Notification(title, {
         body: body,
@@ -1547,7 +1565,6 @@ function showForegroundNotification(title, body, data) {
         window.focus();
         notification.close();
         if (data.otherUid) {
-            // Try to open the chat
             handleOpenChatFromNotification(data.otherUid);
         }
     };
@@ -1564,7 +1581,6 @@ async function handleOpenChatFromNotification(otherUid) {
     }
 }
 
-// Service worker se click handling
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data && event.data.type === "OPEN_CHAT") {
@@ -1594,10 +1610,28 @@ async function requestNotificationPermission() {
     }
 
     try {
-        fcmToken = await getToken(messaging, { vapidKey: VAPID_KEY });
+        // Register service worker with correct path for subfolder deployments
+        let swRegistration;
+        try {
+            swRegistration = await navigator.serviceWorker.register(SW_PATH, {
+                scope: SW_SCOPE
+            });
+            console.log("[SW] Registered:", swRegistration);
+        } catch (swError) {
+            console.error("[SW] Registration error:", swError);
+            // Try to get existing registration
+            swRegistration = await navigator.serviceWorker.getRegistration();
+            if (!swRegistration) throw swError;
+        }
+
+        await navigator.serviceWorker.ready;
+
+        fcmToken = await getToken(messaging, {
+            vapidKey: VAPID_KEY,
+            serviceWorkerRegistration: swRegistration
+        });
 
         if (fcmToken) {
-            // Save token to user profile
             await updateDoc(doc(db, USERS_COLLECTION, auth.currentUser.uid), {
                 fcmToken: fcmToken,
                 fcmUpdatedAt: serverTimestamp()
@@ -1662,7 +1696,6 @@ function updateNotifUI() {
         }
     }
 
-    // Banner
     if (notificationBanner) {
         const dismissed = localStorage.getItem("notifBannerDismissed") === "1";
         if (!enabled && !dismissed && messagingSupported &&
@@ -1697,7 +1730,6 @@ dismissNotifButton.addEventListener("click", () => {
 
 notifToggle.addEventListener("click", async () => {
     if (isNotifEnabled()) {
-        // Already enabled — just inform
         alert("Notifications are enabled. You can disable them from browser settings.");
         return;
     }
@@ -2028,10 +2060,8 @@ function handleUrlParams() {
     const params = new URLSearchParams(window.location.search);
     const otherUid = params.get("openChat");
     if (otherUid) {
-        // Clean URL
         const newUrl = window.location.pathname;
         window.history.replaceState({}, "", newUrl);
-        // Try to open that chat
         setTimeout(() => handleOpenChatFromNotification(otherUid), 500);
     }
 }
@@ -3041,12 +3071,10 @@ function getAuthErrorMessage(error) {
 // =========================================
 applyMode("signup");
 
-// Init messaging (after auth state starts)
 initMessaging().then(() => {
     updateNotifUI();
 });
 
-// Also listen for auth changes to route user
 onAuthStateChanged(auth, (user) => {
     routeUser(user);
 });
