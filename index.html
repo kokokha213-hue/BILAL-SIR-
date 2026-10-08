@@ -40,6 +40,7 @@ body {
         radial-gradient(circle at top left, rgba(39, 211, 162, 0.12), transparent 32%),
         radial-gradient(circle at bottom right, rgba(60, 130, 246, 0.10), transparent 30%),
         var(--bg);
+    -webkit-tap-highlight-color: transparent;
 }
 
 .app-shell {
@@ -92,6 +93,7 @@ body {
     background: linear-gradient(135deg, #4ce7bd, #20bd91);
     font-size: 24px;
     box-shadow: 0 10px 30px rgba(39, 211, 162, 0.25);
+    flex-shrink: 0;
 }
 
 .brand h1 { margin: 0; font-size: 18px; font-weight: 750; }
@@ -139,7 +141,6 @@ input { font: inherit; }
     background: rgba(255,255,255,0.07);
 }
 
-/* Password wrapper with show/hide */
 .password-wrapper {
     position: relative;
     display: flex;
@@ -180,13 +181,27 @@ input { font: inherit; }
     line-height: 1.5;
 }
 
-.password-hint.error {
-    color: var(--danger);
+.password-hint.error { color: var(--danger); }
+.password-hint.success { color: var(--success); }
+
+.forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -4px;
+    margin-bottom: 6px;
 }
 
-.password-hint.success {
-    color: var(--success);
+.forgot-link {
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 650;
+    padding: 0;
 }
+
+.forgot-link:hover { text-decoration: underline; }
 
 /* =========================================
    BUTTONS
@@ -226,6 +241,15 @@ input { font: inherit; }
 
 .secondary-button:hover:not(:disabled) { background: rgba(255,255,255,0.08); }
 .secondary-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.danger-button {
+    border-color: rgba(255, 107, 122, 0.3);
+    color: var(--danger);
+}
+
+.danger-button:hover:not(:disabled) {
+    background: rgba(255, 107, 122, 0.1);
+}
 
 .text-button {
     border: 0;
@@ -274,9 +298,7 @@ input { font: inherit; }
     color: var(--muted);
 }
 
-.switch-mode button {
-    margin-left: 6px;
-}
+.switch-mode button { margin-left: 6px; }
 
 /* =========================================
    LEGAL
@@ -290,18 +312,32 @@ input { font: inherit; }
 }
 
 /* =========================================
-   VERIFY EMAIL VIEW
+   ICON VIEWS (Verify, Forgot, Reset)
 ========================================= */
-.verify-icon {
+.status-icon {
     width: 68px;
     height: 68px;
     display: grid;
     place-items: center;
     margin: 0 auto 22px;
     border-radius: 22px;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.status-icon.warning {
     background: rgba(245, 185, 66, 0.12);
     color: var(--warning);
-    font-size: 30px;
+}
+
+.status-icon.success {
+    background: rgba(66, 211, 146, 0.12);
+    color: var(--success);
+}
+
+.status-icon.primary {
+    background: rgba(39, 211, 162, 0.1);
+    color: var(--primary);
 }
 
 .email-highlight {
@@ -312,7 +348,7 @@ input { font: inherit; }
     overflow-wrap: anywhere;
 }
 
-.verify-steps {
+.info-box {
     margin-top: 20px;
     padding: 16px;
     border: 1px solid var(--card-border);
@@ -324,20 +360,35 @@ input { font: inherit; }
     color: var(--muted);
 }
 
-.verify-steps ol {
+.info-box ol {
     margin: 0;
     padding-left: 20px;
 }
 
-.verify-steps li { margin-bottom: 4px; }
-.verify-steps li:last-child { margin-bottom: 0; }
+.info-box li { margin-bottom: 4px; }
+.info-box li:last-child { margin-bottom: 0; }
 
-.verify-actions {
+.action-stack {
     margin-top: 22px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.back-link:hover { color: var(--text); }
 
 /* =========================================
    HOME
@@ -397,6 +448,117 @@ input { font: inherit; }
 }
 
 /* =========================================
+   SETTINGS MODAL
+========================================= */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 30px;
+    border: 1px solid var(--card-border);
+    border-radius: 22px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    animation: cardIn 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s;
+}
+
+.modal-close:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+}
+
+.modal-section {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.modal-section:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.modal-section h4 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.modal-section p {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    font-size: 14px;
+}
+
+.settings-row span:first-child {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.settings-row strong {
+    color: var(--text);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    text-align: right;
+    font-size: 13px;
+}
+
+/* =========================================
    RESPONSIVE
 ========================================= */
 @media (max-width: 520px) {
@@ -404,6 +566,7 @@ input { font: inherit; }
     .auth-card { padding: 25px 20px; border-radius: 21px; }
     .brand { margin-bottom: 32px; }
     .auth-heading h2 { font-size: 25px; }
+    .modal-card { padding: 22px 18px; }
 }
 
 /* =========================================
@@ -487,6 +650,12 @@ input { font: inherit; }
                     </div>
                 </div>
 
+                <div id="forgotRow" class="forgot-row hidden">
+                    <button type="button" id="forgotLink" class="forgot-link">
+                        Forgot password?
+                    </button>
+                </div>
+
                 <div id="authMessage" class="message" role="alert"></div>
 
                 <button id="submitButton" type="submit" class="primary-button">
@@ -517,7 +686,7 @@ input { font: inherit; }
     <section id="verifyView" class="auth-view hidden">
         <div class="auth-card">
 
-            <div class="verify-icon">✉</div>
+            <div class="status-icon warning">✉</div>
 
             <div class="auth-heading center">
                 <h2>Verify your email</h2>
@@ -525,17 +694,18 @@ input { font: inherit; }
                 <strong id="verifyEmail" class="email-highlight">you@example.com</strong>
             </div>
 
-            <div class="verify-steps">
+            <div class="info-box">
                 <ol>
                     <li>Open your email inbox.</li>
+                    <li><strong>Check spam folder</strong> if you don't see it.</li>
                     <li>Click the verification link.</li>
-                    <li>Come back here and press <strong>I've verified</strong>.</li>
+                    <li>Come back and press <strong>I've verified</strong>.</li>
                 </ol>
             </div>
 
             <div id="verifyMessage" class="message" role="alert"></div>
 
-            <div class="verify-actions">
+            <div class="action-stack">
                 <button id="verifiedButton" type="button" class="primary-button">
                     <span class="button-text">I've verified — Continue</span>
                     <span class="button-loader hidden" aria-hidden="true"></span>
@@ -549,6 +719,89 @@ input { font: inherit; }
                     Sign out
                 </button>
             </div>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================
+         FORGOT PASSWORD VIEW
+    ========================================== -->
+    <section id="forgotView" class="auth-view hidden">
+        <div class="auth-card">
+
+            <button id="forgotBackButton" type="button" class="back-link">
+                ← <span>Back to sign in</span>
+            </button>
+
+            <div class="status-icon primary">🔑</div>
+
+            <div class="auth-heading center">
+                <h2>Reset your password</h2>
+                <p>Enter your email and we'll send you a reset link.</p>
+            </div>
+
+            <form id="forgotForm" novalidate>
+
+                <div class="field-group">
+                    <label class="field-label" for="forgotEmailInput">Email</label>
+                    <input
+                        id="forgotEmailInput"
+                        class="text-input"
+                        type="email"
+                        inputmode="email"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required>
+                </div>
+
+                <div id="forgotMessage" class="message" role="alert"></div>
+
+                <button id="forgotSubmitButton" type="submit" class="primary-button">
+                    <span class="button-text">Send reset link</span>
+                    <span class="button-loader hidden" aria-hidden="true"></span>
+                </button>
+
+            </form>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================
+         RESET EMAIL SENT VIEW
+    ========================================== -->
+    <section id="resetSentView" class="auth-view hidden">
+        <div class="auth-card">
+
+            <div class="status-icon success">✉</div>
+
+            <div class="auth-heading center">
+                <h2>Check your email</h2>
+                <p>We sent a password reset link to</p>
+                <strong id="resetSentEmail" class="email-highlight">you@example.com</strong>
+            </div>
+
+            <div class="info-box">
+                <ol>
+                    <li>Open your inbox.</li>
+                    <li><strong>Check spam folder</strong> if not found.</li>
+                    <li>Click the reset link.</li>
+                    <li>Set a new password.</li>
+                </ol>
+            </div>
+
+            <div class="action-stack">
+                <button id="resetSentBackButton" type="button" class="primary-button">
+                    Back to sign in
+                </button>
+
+                <button id="resetResendButton" type="button" class="secondary-button">
+                    Resend reset email
+                </button>
+            </div>
+
+            <div id="resetSentMessage" class="message" role="alert"></div>
 
         </div>
     </section>
@@ -575,6 +828,10 @@ input { font: inherit; }
                 <code id="userUid">—</code>
             </div>
 
+            <button id="settingsButton" type="button" class="secondary-button">
+                Account settings
+            </button>
+
             <button id="logoutButton" type="button" class="secondary-button">
                 Sign out
             </button>
@@ -583,6 +840,53 @@ input { font: inherit; }
     </section>
 
 </main>
+
+
+<!-- =========================================
+     SETTINGS MODAL
+========================================== -->
+<div id="settingsModal" class="modal-overlay hidden">
+    <div class="modal-card">
+
+        <div class="modal-header">
+            <h3>Account settings</h3>
+            <button id="settingsClose" class="modal-close" aria-label="Close">✕</button>
+        </div>
+
+        <div class="modal-section">
+            <div class="settings-row">
+                <span>Email</span>
+                <strong id="settingsEmail">—</strong>
+            </div>
+            <div class="settings-row">
+                <span>Email status</span>
+                <strong id="settingsVerified" style="color: var(--success);">Verified</strong>
+            </div>
+            <div class="settings-row">
+                <span>User ID</span>
+                <strong id="settingsUid">—</strong>
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <h4>Send password reset email</h4>
+            <p>We'll email you a link to set a new password.</p>
+            <button id="settingsSendReset" class="secondary-button" style="margin-top: 0;">
+                Send reset email
+            </button>
+            <div id="settingsMessage" class="message" role="alert"></div>
+        </div>
+
+        <div class="modal-section">
+            <h4>Sign out</h4>
+            <p>You'll need to sign in again to use the app.</p>
+            <button id="settingsSignOut" class="secondary-button danger-button" style="margin-top: 0;">
+                Sign out
+            </button>
+        </div>
+
+    </div>
+</div>
 
 
 <!-- =========================================
@@ -604,6 +908,7 @@ import {
     signInWithEmailAndPassword,
     signOut,
     sendEmailVerification,
+    sendPasswordResetEmail,
     onAuthStateChanged
 } from
     "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
@@ -649,31 +954,60 @@ let mode = "signup"; // "signup" | "signin"
 // =========================================
 const authView         = document.getElementById("authView");
 const verifyView       = document.getElementById("verifyView");
+const forgotView       = document.getElementById("forgotView");
+const resetSentView    = document.getElementById("resetSentView");
 const homeView         = document.getElementById("homeView");
 
+// Auth form
 const authForm         = document.getElementById("authForm");
 const authTitle        = document.getElementById("authTitle");
 const authSubtitle     = document.getElementById("authSubtitle");
 const authMessage      = document.getElementById("authMessage");
-
 const emailInput       = document.getElementById("emailInput");
 const passwordInput    = document.getElementById("passwordInput");
 const passwordToggle   = document.getElementById("passwordToggle");
 const passwordHint     = document.getElementById("passwordHint");
-
+const forgotRow        = document.getElementById("forgotRow");
+const forgotLink       = document.getElementById("forgotLink");
 const submitButton     = document.getElementById("submitButton");
 const switchText       = document.getElementById("switchText");
 const switchButton     = document.getElementById("switchButton");
 
+// Verify
 const verifyEmail      = document.getElementById("verifyEmail");
 const verifyMessage    = document.getElementById("verifyMessage");
 const verifiedButton   = document.getElementById("verifiedButton");
 const resendVerifyButton = document.getElementById("resendVerifyButton");
 const logoutVerifyButton = document.getElementById("logoutVerifyButton");
 
+// Forgot
+const forgotForm       = document.getElementById("forgotForm");
+const forgotEmailInput = document.getElementById("forgotEmailInput");
+const forgotMessage    = document.getElementById("forgotMessage");
+const forgotSubmitButton = document.getElementById("forgotSubmitButton");
+const forgotBackButton = document.getElementById("forgotBackButton");
+
+// Reset sent
+const resetSentEmail    = document.getElementById("resetSentEmail");
+const resetSentMessage  = document.getElementById("resetSentMessage");
+const resetSentBackButton = document.getElementById("resetSentBackButton");
+const resetResendButton = document.getElementById("resetResendButton");
+
+// Home
 const userEmail        = document.getElementById("userEmail");
 const userUid          = document.getElementById("userUid");
 const logoutButton     = document.getElementById("logoutButton");
+const settingsButton   = document.getElementById("settingsButton");
+
+// Settings modal
+const settingsModal    = document.getElementById("settingsModal");
+const settingsClose    = document.getElementById("settingsClose");
+const settingsEmail    = document.getElementById("settingsEmail");
+const settingsVerified = document.getElementById("settingsVerified");
+const settingsUid      = document.getElementById("settingsUid");
+const settingsSendReset = document.getElementById("settingsSendReset");
+const settingsMessage  = document.getElementById("settingsMessage");
+const settingsSignOut  = document.getElementById("settingsSignOut");
 
 
 // =========================================
@@ -682,6 +1016,8 @@ const logoutButton     = document.getElementById("logoutButton");
 function showView(view) {
     authView.classList.add("hidden");
     verifyView.classList.add("hidden");
+    forgotView.classList.add("hidden");
+    resetSentView.classList.add("hidden");
     homeView.classList.add("hidden");
     view.classList.remove("hidden");
 }
@@ -722,6 +1058,7 @@ function applyMode(newMode) {
         passwordInput.setAttribute("autocomplete", "new-password");
         passwordHint.classList.remove("error", "success");
         passwordHint.textContent = `Minimum ${MIN_PASSWORD_LENGTH} characters.`;
+        forgotRow.classList.add("hidden");
     } else {
         authTitle.textContent = "Welcome back";
         authSubtitle.textContent = "Sign in with your email and password.";
@@ -730,6 +1067,7 @@ function applyMode(newMode) {
         switchButton.textContent = "Sign up";
         passwordInput.setAttribute("autocomplete", "current-password");
         passwordHint.textContent = "";
+        forgotRow.classList.remove("hidden");
     }
 
     passwordInput.value = "";
@@ -791,7 +1129,7 @@ function validateEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function validateForm() {
+function validateAuthForm() {
     const email = emailInput.value.trim();
     const password = passwordInput.value;
 
@@ -834,7 +1172,7 @@ authForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     clearMessage(authMessage);
 
-    const data = validateForm();
+    const data = validateAuthForm();
     if (!data) return;
 
     setButtonLoading(submitButton, true);
@@ -844,11 +1182,8 @@ authForm.addEventListener("submit", async (e) => {
             const cred = await createUserWithEmailAndPassword(
                 auth, data.email, data.password
             );
-
             await sendEmailVerification(cred.user);
-
             console.log("Signup successful, verification email sent");
-            // onAuthStateChanged will route to verifyView
 
         } else {
             const cred = await signInWithEmailAndPassword(
@@ -856,15 +1191,12 @@ authForm.addEventListener("submit", async (e) => {
             );
 
             if (!cred.user.emailVerified) {
-                // Ensure a fresh verification link exists
                 try {
                     await sendEmailVerification(cred.user);
                 } catch (err) {
                     console.warn("Could not resend verification:", err);
                 }
-                // onAuthStateChanged will route to verifyView
             }
-            // else onAuthStateChanged will route to homeView
         }
 
     } catch (error) {
@@ -926,7 +1258,11 @@ resendVerifyButton.addEventListener("click", async () => {
 
     try {
         await sendEmailVerification(user);
-        showMessage(verifyMessage, "Verification email sent.", "success");
+        showMessage(
+            verifyMessage,
+            "Verification email sent. Check your inbox and spam folder.",
+            "success"
+        );
     } catch (error) {
         console.error("Resend error:", error);
         showMessage(verifyMessage, getAuthErrorMessage(error), "error");
@@ -940,6 +1276,92 @@ logoutVerifyButton.addEventListener("click", async () => {
         await signOut(auth);
     } catch (error) {
         console.error("Logout error:", error);
+    }
+});
+
+
+// =========================================
+// FORGOT PASSWORD
+// =========================================
+forgotLink.addEventListener("click", () => {
+    clearMessage(forgotMessage);
+    // Pre-fill email if user already typed one
+    const current = emailInput.value.trim();
+    forgotEmailInput.value = current || "";
+    showView(forgotView);
+    setTimeout(() => forgotEmailInput.focus(), 50);
+});
+
+forgotBackButton.addEventListener("click", () => {
+    clearMessage(forgotMessage);
+    showView(authView);
+});
+
+forgotForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMessage(forgotMessage);
+
+    const email = forgotEmailInput.value.trim();
+
+    if (!email) {
+        showMessage(forgotMessage, "Please enter your email.", "error");
+        forgotEmailInput.focus();
+        return;
+    }
+
+    if (!validateEmail(email)) {
+        showMessage(forgotMessage, "Please enter a valid email address.", "error");
+        forgotEmailInput.focus();
+        return;
+    }
+
+    setButtonLoading(forgotSubmitButton, true);
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        resetSentEmail.textContent = email;
+        clearMessage(resetSentMessage);
+        showView(resetSentView);
+    } catch (error) {
+        console.error("Password reset error:", error);
+        // For security we still show success screen even if user doesn't exist
+        if (error?.code === "auth/user-not-found") {
+            resetSentEmail.textContent = email;
+            clearMessage(resetSentMessage);
+            showView(resetSentView);
+        } else {
+            showMessage(forgotMessage, getAuthErrorMessage(error), "error");
+        }
+    } finally {
+        setButtonLoading(forgotSubmitButton, false);
+    }
+});
+
+
+// =========================================
+// RESET SENT VIEW
+// =========================================
+resetSentBackButton.addEventListener("click", () => {
+    clearMessage(resetSentMessage);
+    applyMode("signin");
+    showView(authView);
+});
+
+resetResendButton.addEventListener("click", async () => {
+    const email = resetSentEmail.textContent.trim();
+    if (!email) return;
+
+    clearMessage(resetSentMessage);
+    resetResendButton.disabled = true;
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showMessage(resetSentMessage, "Reset email sent again.", "success");
+    } catch (error) {
+        console.error("Resend reset error:", error);
+        showMessage(resetSentMessage, getAuthErrorMessage(error), "error");
+    } finally {
+        setTimeout(() => { resetResendButton.disabled = false; }, 3000);
     }
 });
 
@@ -961,10 +1383,81 @@ logoutButton.addEventListener("click", async () => {
 
 
 // =========================================
+// SETTINGS MODAL
+// =========================================
+function openSettings() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    settingsEmail.textContent = user.email || "—";
+    settingsUid.textContent = user.uid;
+    settingsVerified.textContent = user.emailVerified ? "Verified" : "Not verified";
+    settingsVerified.style.color = user.emailVerified
+        ? "var(--success)"
+        : "var(--warning)";
+
+    clearMessage(settingsMessage);
+    settingsModal.classList.remove("hidden");
+}
+
+function closeSettings() {
+    settingsModal.classList.add("hidden");
+}
+
+settingsButton.addEventListener("click", openSettings);
+settingsClose.addEventListener("click", closeSettings);
+
+settingsModal.addEventListener("click", (e) => {
+    if (e.target === settingsModal) closeSettings();
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !settingsModal.classList.contains("hidden")) {
+        closeSettings();
+    }
+});
+
+settingsSendReset.addEventListener("click", async () => {
+    const user = auth.currentUser;
+    if (!user || !user.email) return;
+
+    clearMessage(settingsMessage);
+    settingsSendReset.disabled = true;
+
+    try {
+        await sendPasswordResetEmail(auth, user.email);
+        showMessage(
+            settingsMessage,
+            "Reset email sent. Check your inbox and spam folder.",
+            "success"
+        );
+    } catch (error) {
+        console.error("Settings reset error:", error);
+        showMessage(settingsMessage, getAuthErrorMessage(error), "error");
+    } finally {
+        setTimeout(() => { settingsSendReset.disabled = false; }, 3000);
+    }
+});
+
+settingsSignOut.addEventListener("click", async () => {
+    settingsSignOut.disabled = true;
+    try {
+        await signOut(auth);
+        closeSettings();
+    } catch (error) {
+        console.error("Sign out failed:", error);
+    } finally {
+        settingsSignOut.disabled = false;
+    }
+});
+
+
+// =========================================
 // ROUTER
 // =========================================
 function routeUser(user) {
     if (!user) {
+        applyMode("signup");
         showView(authView);
         return;
     }
