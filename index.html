@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="description" content="Secure real-time messaging application">
-<title>Messenger - Secure Sign In</title>
+<meta name="description" content="Secure messaging application">
+<title>Messenger - Sign In</title>
 
 <style>
 /* =========================================
@@ -21,6 +21,7 @@
     --primary-dark: #1aaa83;
     --danger: #ff6b7a;
     --success: #42d392;
+    --warning: #f5b942;
     --input: rgba(255, 255, 255, 0.055);
     --input-border: rgba(255, 255, 255, 0.11);
     --shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
@@ -71,6 +72,9 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* =========================================
+   BRAND
+========================================= */
 .brand {
     display: flex;
     align-items: center;
@@ -93,11 +97,17 @@ body {
 .brand h1 { margin: 0; font-size: 18px; font-weight: 750; }
 .brand p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
 
+/* =========================================
+   HEADINGS
+========================================= */
 .auth-heading { margin-bottom: 26px; }
 .auth-heading.center { text-align: center; }
 .auth-heading h2 { margin: 0 0 8px; font-size: 28px; line-height: 1.15; }
 .auth-heading p { margin: 0; color: var(--muted); line-height: 1.6; }
 
+/* =========================================
+   FORM
+========================================= */
 .field-label {
     display: block;
     margin-bottom: 9px;
@@ -106,35 +116,12 @@ body {
     color: #dbe5ef;
 }
 
-.center-label { text-align: center; }
-
-.phone-row { display: flex; gap: 9px; }
-
-.country-selector {
-    min-width: 108px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    border: 1px solid var(--input-border);
-    border-radius: 14px;
-    background: var(--input);
-    color: var(--text);
-    cursor: pointer;
-    font-size: 14px;
-    padding: 0 12px;
-    transition: border-color 0.2s, background 0.2s;
-}
-
-.country-selector:hover { background: rgba(255,255,255,0.08); }
-.country-selector:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-.chevron { color: var(--muted); }
+.field-group { margin-bottom: 16px; }
 
 input { font: inherit; }
 
-#phoneNumber {
+.text-input {
     width: 100%;
-    min-width: 0;
     padding: 15px 16px;
     border: 1px solid var(--input-border);
     border-radius: 14px;
@@ -144,70 +131,66 @@ input { font: inherit; }
     transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
-#phoneNumber::placeholder { color: #64748b; }
+.text-input::placeholder { color: #64748b; }
 
-#phoneNumber:focus {
+.text-input:focus {
     border-color: rgba(39, 211, 162, 0.7);
     box-shadow: 0 0 0 4px rgba(39, 211, 162, 0.08);
     background: rgba(255,255,255,0.07);
 }
 
-.country-dropdown {
+/* Password wrapper with show/hide */
+.password-wrapper {
     position: relative;
-    margin-top: 8px;
-    overflow: hidden;
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    background: #0c1829;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.45);
-    z-index: 50;
-}
-
-.country-search-wrapper {
-    padding: 10px;
-    border-bottom: 1px solid var(--card-border);
-}
-
-#countrySearch {
-    width: 100%;
-    padding: 12px 13px;
-    border: 1px solid var(--input-border);
-    border-radius: 11px;
-    background: var(--input);
-    color: var(--text);
-    outline: none;
-}
-
-.country-list { max-height: 270px; overflow-y: auto; }
-
-.country-item {
-    width: 100%;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border: 0;
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
-    text-align: left;
-    transition: background 0.15s;
 }
 
-.country-item:hover,
-.country-item.active { background: rgba(255,255,255,0.07); }
+.password-wrapper .text-input {
+    padding-right: 52px;
+}
 
-.country-flag { width: 28px; font-size: 21px; }
-.country-name { flex: 1; font-size: 14px; }
-.country-code { color: var(--muted); font-size: 13px; }
+.password-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s, color 0.2s;
+}
 
-.phone-preview {
-    min-height: 22px;
-    margin-top: 9px;
+.password-toggle:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+}
+
+.password-hint {
+    margin-top: 8px;
     color: var(--muted);
     font-size: 12px;
+    line-height: 1.5;
 }
 
+.password-hint.error {
+    color: var(--danger);
+}
+
+.password-hint.success {
+    color: var(--success);
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
 .primary-button {
     position: relative;
     width: 100%;
@@ -230,7 +213,7 @@ input { font: inherit; }
 
 .secondary-button {
     width: 100%;
-    margin-top: 22px;
+    margin-top: 12px;
     padding: 14px;
     border: 1px solid var(--input-border);
     border-radius: 13px;
@@ -241,7 +224,8 @@ input { font: inherit; }
     transition: background 0.2s;
 }
 
-.secondary-button:hover { background: rgba(255,255,255,0.08); }
+.secondary-button:hover:not(:disabled) { background: rgba(255,255,255,0.08); }
+.secondary-button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .text-button {
     border: 0;
@@ -249,9 +233,10 @@ input { font: inherit; }
     color: var(--primary);
     cursor: pointer;
     font-weight: 700;
+    padding: 0;
 }
 
-.text-button:disabled { color: #64748b; cursor: not-allowed; }
+.text-button:hover { text-decoration: underline; }
 
 .button-loader {
     width: 18px;
@@ -265,10 +250,37 @@ input { font: inherit; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.message { min-height: 22px; margin-top: 10px; font-size: 13px; line-height: 1.5; }
+/* =========================================
+   MESSAGES
+========================================= */
+.message {
+    min-height: 22px;
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 .message.error { color: var(--danger); }
 .message.success { color: var(--success); }
+.message.warning { color: var(--warning); }
 
+/* =========================================
+   SWITCH MODE LINK
+========================================= */
+.switch-mode {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.switch-mode button {
+    margin-left: 6px;
+}
+
+/* =========================================
+   LEGAL
+========================================= */
 .legal-text {
     margin: 22px 0 0;
     color: #64748b;
@@ -277,65 +289,59 @@ input { font: inherit; }
     line-height: 1.6;
 }
 
-.back-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 28px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 13px;
-}
-
-.back-button:hover { color: var(--text); }
-
-.otp-icon {
-    width: 58px;
-    height: 58px;
+/* =========================================
+   VERIFY EMAIL VIEW
+========================================= */
+.verify-icon {
+    width: 68px;
+    height: 68px;
     display: grid;
     place-items: center;
-    margin: 0 auto 20px;
-    border-radius: 18px;
-    background: rgba(39, 211, 162, 0.1);
-    color: var(--primary);
-    font-size: 25px;
+    margin: 0 auto 22px;
+    border-radius: 22px;
+    background: rgba(245, 185, 66, 0.12);
+    color: var(--warning);
+    font-size: 30px;
 }
 
-#maskedPhone {
+.email-highlight {
     display: block;
     margin-top: 8px;
     color: var(--text);
     font-size: 14px;
+    overflow-wrap: anywhere;
 }
 
-.otp-input {
-    width: 100%;
-    padding: 17px 12px;
-    border: 1px solid var(--input-border);
+.verify-steps {
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid var(--card-border);
     border-radius: 14px;
-    background: var(--input);
-    color: var(--text);
-    outline: none;
-    text-align: center;
-    letter-spacing: 9px;
-    font-size: 23px;
-    font-weight: 700;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    background: rgba(255,255,255,0.03);
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
 }
 
-.otp-input:focus {
-    border-color: rgba(39, 211, 162, 0.7);
-    box-shadow: 0 0 0 4px rgba(39, 211, 162, 0.08);
+.verify-steps ol {
+    margin: 0;
+    padding-left: 20px;
 }
 
-.resend-section { margin-top: 22px; text-align: center; font-size: 13px; }
-.resend-section p { margin: 0 0 10px; color: var(--muted); }
+.verify-steps li { margin-bottom: 4px; }
+.verify-steps li:last-child { margin-bottom: 0; }
 
-#recaptcha-container { margin-top: 10px; min-height: 0; overflow: hidden; }
+.verify-actions {
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
+/* =========================================
+   HOME
+========================================= */
 .home-view { width: 100%; max-width: 500px; }
 
 .home-card {
@@ -368,7 +374,7 @@ input { font: inherit; }
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin-top: 22px;
+    margin-top: 18px;
     padding: 14px;
     border: 1px solid var(--card-border);
     border-radius: 13px;
@@ -390,15 +396,19 @@ input { font: inherit; }
     font-size: 13px;
 }
 
+/* =========================================
+   RESPONSIVE
+========================================= */
 @media (max-width: 520px) {
     .app-shell { align-items: flex-start; padding: 14px; padding-top: 24px; }
     .auth-card { padding: 25px 20px; border-radius: 21px; }
     .brand { margin-bottom: 32px; }
     .auth-heading h2 { font-size: 25px; }
-    .country-selector { min-width: 94px; }
-    .otp-input { letter-spacing: 7px; }
 }
 
+/* =========================================
+   LIGHT MODE
+========================================= */
 @media (prefers-color-scheme: light) {
     :root {
         --bg: #eef3f7;
@@ -410,9 +420,6 @@ input { font: inherit; }
         --input: rgba(15,23,42,0.035);
         --input-border: rgba(15,23,42,0.10);
     }
-    .country-dropdown { background: #ffffff; }
-    .country-item:hover,
-    .country-item.active { background: rgba(15,23,42,0.05); }
 }
 </style>
 </head>
@@ -422,9 +429,9 @@ input { font: inherit; }
 <main class="app-shell">
 
     <!-- =========================================
-         LOGIN VIEW
+         AUTH VIEW (Sign Up / Sign In)
     ========================================== -->
-    <section id="loginView" class="auth-view">
+    <section id="authView" class="auth-view">
         <div class="auth-card">
 
             <div class="brand">
@@ -436,50 +443,68 @@ input { font: inherit; }
             </div>
 
             <div class="auth-heading">
-                <h2>Welcome back</h2>
-                <p>Enter your phone number to securely continue.</p>
+                <h2 id="authTitle">Create account</h2>
+                <p id="authSubtitle">Sign up with your email to get started.</p>
             </div>
 
-            <form id="phoneForm" novalidate>
+            <form id="authForm" novalidate>
 
-                <label class="field-label" for="phoneNumber">Phone number</label>
-
-                <div class="phone-row">
-                    <button type="button" id="countrySelector" class="country-selector"
-                            aria-haspopup="listbox" aria-expanded="false">
-                        <span id="selectedFlag">🇵🇰</span>
-                        <span id="selectedCode">+92</span>
-                        <span class="chevron">⌄</span>
-                    </button>
-
-                    <input id="phoneNumber" type="tel" inputmode="numeric"
-                           autocomplete="tel-national" placeholder="300 1234567"
-                           maxlength="15" aria-label="Phone number">
+                <div class="field-group">
+                    <label class="field-label" for="emailInput">Email</label>
+                    <input
+                        id="emailInput"
+                        class="text-input"
+                        type="email"
+                        inputmode="email"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required>
                 </div>
 
-                <div id="countryDropdown" class="country-dropdown hidden" role="listbox">
-                    <div class="country-search-wrapper">
-                        <input id="countrySearch" type="search"
-                               placeholder="Search country..." autocomplete="off">
+                <div class="field-group">
+                    <label class="field-label" for="passwordInput">Password</label>
+
+                    <div class="password-wrapper">
+                        <input
+                            id="passwordInput"
+                            class="text-input"
+                            type="password"
+                            autocomplete="new-password"
+                            placeholder="At least 8 characters"
+                            required>
+
+                        <button
+                            type="button"
+                            id="passwordToggle"
+                            class="password-toggle"
+                            aria-label="Show password">
+                            👁
+                        </button>
                     </div>
-                    <div id="countryList" class="country-list"></div>
+
+                    <div id="passwordHint" class="password-hint">
+                        Minimum 8 characters.
+                    </div>
                 </div>
 
-                <div id="phonePreview" class="phone-preview" aria-live="polite"></div>
-                <div id="loginMessage" class="message" role="alert"></div>
+                <div id="authMessage" class="message" role="alert"></div>
 
-                <div id="recaptcha-container"></div>
-
-                <button id="continueButton" type="submit" class="primary-button">
-                    <span class="button-text">Continue</span>
+                <button id="submitButton" type="submit" class="primary-button">
+                    <span class="button-text">Create account</span>
                     <span class="button-loader hidden" aria-hidden="true"></span>
                 </button>
 
             </form>
 
+            <div class="switch-mode">
+                <span id="switchText">Already have an account?</span>
+                <button type="button" id="switchButton" class="text-button">
+                    Sign in
+                </button>
+            </div>
+
             <p class="legal-text">
                 By continuing, you agree to use this service responsibly.
-                SMS verification may be required.
             </p>
 
         </div>
@@ -487,47 +512,41 @@ input { font: inherit; }
 
 
     <!-- =========================================
-         OTP VIEW
+         EMAIL VERIFICATION VIEW
     ========================================== -->
-    <section id="otpView" class="auth-view hidden">
+    <section id="verifyView" class="auth-view hidden">
         <div class="auth-card">
 
-            <button id="backButton" type="button" class="back-button">
-                ← <span>Change number</span>
-            </button>
-
-            <div class="otp-icon"><span>✉</span></div>
+            <div class="verify-icon">✉</div>
 
             <div class="auth-heading center">
-                <h2>Enter verification code</h2>
-                <p>We sent a 6-digit verification code to</p>
-                <strong id="maskedPhone">+92 ••••••••••</strong>
+                <h2>Verify your email</h2>
+                <p>We sent a verification link to</p>
+                <strong id="verifyEmail" class="email-highlight">you@example.com</strong>
             </div>
 
-            <form id="otpForm" novalidate>
+            <div class="verify-steps">
+                <ol>
+                    <li>Open your email inbox.</li>
+                    <li>Click the verification link.</li>
+                    <li>Come back here and press <strong>I've verified</strong>.</li>
+                </ol>
+            </div>
 
-                <label class="field-label center-label" for="otpInput">
-                    Verification code
-                </label>
+            <div id="verifyMessage" class="message" role="alert"></div>
 
-                <input id="otpInput" class="otp-input" type="text"
-                       inputmode="numeric" autocomplete="one-time-code"
-                       maxlength="6" pattern="[0-9]{6}"
-                       placeholder="000000" aria-label="6 digit verification code">
-
-                <div id="otpMessage" class="message" role="alert"></div>
-
-                <button id="verifyButton" type="submit" class="primary-button">
-                    <span class="button-text">Verify & Continue</span>
+            <div class="verify-actions">
+                <button id="verifiedButton" type="button" class="primary-button">
+                    <span class="button-text">I've verified — Continue</span>
                     <span class="button-loader hidden" aria-hidden="true"></span>
                 </button>
 
-            </form>
+                <button id="resendVerifyButton" type="button" class="secondary-button">
+                    Resend verification email
+                </button>
 
-            <div class="resend-section">
-                <p id="resendTimer">Resend code in <strong>60s</strong></p>
-                <button id="resendButton" type="button" class="text-button" disabled>
-                    Resend OTP
+                <button id="logoutVerifyButton" type="button" class="secondary-button">
+                    Sign out
                 </button>
             </div>
 
@@ -536,7 +555,7 @@ input { font: inherit; }
 
 
     <!-- =========================================
-         AUTHENTICATED HOME
+         HOME VIEW
     ========================================== -->
     <section id="homeView" class="home-view hidden">
         <div class="home-card">
@@ -544,16 +563,16 @@ input { font: inherit; }
             <div class="home-icon">✓</div>
 
             <h1>You're signed in</h1>
-            <p>Firebase Phone Authentication is working successfully.</p>
+            <p>Your account is verified and ready to use.</p>
+
+            <div class="user-info">
+                <span class="user-info-label">Email</span>
+                <span id="userEmail">—</span>
+            </div>
 
             <div class="user-info">
                 <span class="user-info-label">Firebase UID</span>
                 <code id="userUid">—</code>
-            </div>
-
-            <div class="user-info">
-                <span class="user-info-label">Phone</span>
-                <span id="userPhone">—</span>
             </div>
 
             <button id="logoutButton" type="button" class="secondary-button">
@@ -567,14 +586,13 @@ input { font: inherit; }
 
 
 <!-- =========================================
-     FIREBASE + APP LOGIC (ALL IN ONE)
+     FIREBASE + APP LOGIC
 ========================================== -->
 <script type="module">
 
 // =========================================
-// FIREBASE SDK IMPORTS
+// FIREBASE IMPORTS
 // =========================================
-
 import { initializeApp } from
     "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 
@@ -582,18 +600,18 @@ import {
     getAuth,
     setPersistence,
     browserLocalPersistence,
-    RecaptchaVerifier,
-    signInWithPhoneNumber,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
     signOut,
+    sendEmailVerification,
     onAuthStateChanged
 } from
     "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 
 // =========================================
-// FIREBASE CONFIGURATION (AAPKI)
+// FIREBASE CONFIG
 // =========================================
-
 const firebaseConfig = {
     apiKey: "AIzaSyAA-czBDazvHoNsPiQEvLWo2PYdhY-37oE",
     authDomain: "mychat-f9042.firebaseapp.com",
@@ -606,485 +624,329 @@ const firebaseConfig = {
 
 
 // =========================================
-// INITIALIZE FIREBASE
+// INIT
 // =========================================
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Persistence: user refresh ke baad bhi signed-in rahe
 await setPersistence(auth, browserLocalPersistence);
 
 
 // =========================================
-// COUNTRY DATA
+// CONSTANTS
 // =========================================
-
-const countries = [
-    { code: "PK", name: "Pakistan", dialCode: "+92", flag: "🇵🇰" },
-    { code: "AF", name: "Afghanistan", dialCode: "+93", flag: "🇦🇫" },
-    { code: "AE", name: "United Arab Emirates", dialCode: "+971", flag: "🇦🇪" },
-    { code: "SA", name: "Saudi Arabia", dialCode: "+966", flag: "🇸🇦" },
-    { code: "GB", name: "United Kingdom", dialCode: "+44", flag: "🇬🇧" },
-    { code: "US", name: "United States", dialCode: "+1", flag: "🇺🇸" },
-    { code: "CA", name: "Canada", dialCode: "+1", flag: "🇨🇦" },
-    { code: "AU", name: "Australia", dialCode: "+61", flag: "🇦🇺" },
-    { code: "DE", name: "Germany", dialCode: "+49", flag: "🇩🇪" },
-    { code: "TR", name: "Turkey", dialCode: "+90", flag: "🇹🇷" },
-    { code: "IN", name: "India", dialCode: "+91", flag: "🇮🇳" },
-    { code: "FR", name: "France", dialCode: "+33", flag: "🇫🇷" },
-    { code: "IT", name: "Italy", dialCode: "+39", flag: "🇮🇹" },
-    { code: "ES", name: "Spain", dialCode: "+34", flag: "🇪🇸" },
-    { code: "NL", name: "Netherlands", dialCode: "+31", flag: "🇳🇱" },
-    { code: "BE", name: "Belgium", dialCode: "+32", flag: "🇧🇪" },
-    { code: "SE", name: "Sweden", dialCode: "+46", flag: "🇸🇪" },
-    { code: "NO", name: "Norway", dialCode: "+47", flag: "🇳🇴" },
-    { code: "DK", name: "Denmark", dialCode: "+45", flag: "🇩🇰" },
-    { code: "CH", name: "Switzerland", dialCode: "+41", flag: "🇨🇭" },
-    { code: "MY", name: "Malaysia", dialCode: "+60", flag: "🇲🇾" },
-    { code: "ID", name: "Indonesia", dialCode: "+62", flag: "🇮🇩" },
-    { code: "BD", name: "Bangladesh", dialCode: "+880", flag: "🇧🇩" },
-    { code: "QA", name: "Qatar", dialCode: "+974", flag: "🇶🇦" },
-    { code: "KW", name: "Kuwait", dialCode: "+965", flag: "🇰🇼" },
-    { code: "OM", name: "Oman", dialCode: "+968", flag: "🇴🇲" },
-    { code: "BH", name: "Bahrain", dialCode: "+973", flag: "🇧🇭" },
-    { code: "EG", name: "Egypt", dialCode: "+20", flag: "🇪🇬" },
-    { code: "ZA", name: "South Africa", dialCode: "+27", flag: "🇿🇦" },
-    { code: "NG", name: "Nigeria", dialCode: "+234", flag: "🇳🇬" },
-    { code: "KE", name: "Kenya", dialCode: "+254", flag: "🇰🇪" },
-    { code: "NZ", name: "New Zealand", dialCode: "+64", flag: "🇳🇿" },
-    { code: "JP", name: "Japan", dialCode: "+81", flag: "🇯🇵" },
-    { code: "KR", name: "South Korea", dialCode: "+82", flag: "🇰🇷" },
-    { code: "SG", name: "Singapore", dialCode: "+65", flag: "🇸🇬" },
-    { code: "TH", name: "Thailand", dialCode: "+66", flag: "🇹🇭" }
-];
+const MIN_PASSWORD_LENGTH = 8;
 
 
 // =========================================
 // STATE
 // =========================================
-
-let confirmationResult = null;
-let selectedCountry = countries[0];
-let recaptchaVerifier = null;
-let resendTimer = null;
-let resendSeconds = 60;
+let mode = "signup"; // "signup" | "signin"
 
 
 // =========================================
 // DOM REFS
 // =========================================
-
-const loginView        = document.getElementById("loginView");
-const otpView          = document.getElementById("otpView");
+const authView         = document.getElementById("authView");
+const verifyView       = document.getElementById("verifyView");
 const homeView         = document.getElementById("homeView");
 
-const phoneForm        = document.getElementById("phoneForm");
-const otpForm          = document.getElementById("otpForm");
+const authForm         = document.getElementById("authForm");
+const authTitle        = document.getElementById("authTitle");
+const authSubtitle     = document.getElementById("authSubtitle");
+const authMessage      = document.getElementById("authMessage");
 
-const phoneInput       = document.getElementById("phoneNumber");
-const otpInput         = document.getElementById("otpInput");
+const emailInput       = document.getElementById("emailInput");
+const passwordInput    = document.getElementById("passwordInput");
+const passwordToggle   = document.getElementById("passwordToggle");
+const passwordHint     = document.getElementById("passwordHint");
 
-const continueButton   = document.getElementById("continueButton");
-const verifyButton     = document.getElementById("verifyButton");
+const submitButton     = document.getElementById("submitButton");
+const switchText       = document.getElementById("switchText");
+const switchButton     = document.getElementById("switchButton");
 
-const countrySelector  = document.getElementById("countrySelector");
-const countryDropdown  = document.getElementById("countryDropdown");
-const countrySearch    = document.getElementById("countrySearch");
-const countryList      = document.getElementById("countryList");
+const verifyEmail      = document.getElementById("verifyEmail");
+const verifyMessage    = document.getElementById("verifyMessage");
+const verifiedButton   = document.getElementById("verifiedButton");
+const resendVerifyButton = document.getElementById("resendVerifyButton");
+const logoutVerifyButton = document.getElementById("logoutVerifyButton");
 
-const selectedFlag     = document.getElementById("selectedFlag");
-const selectedCode     = document.getElementById("selectedCode");
-
-const phonePreview     = document.getElementById("phonePreview");
-
-const loginMessage     = document.getElementById("loginMessage");
-const otpMessage       = document.getElementById("otpMessage");
-
-const maskedPhone      = document.getElementById("maskedPhone");
-
-const resendButton     = document.getElementById("resendButton");
-const resendTimerText  = document.getElementById("resendTimer");
-
-const backButton       = document.getElementById("backButton");
-
+const userEmail        = document.getElementById("userEmail");
+const userUid          = document.getElementById("userUid");
 const logoutButton     = document.getElementById("logoutButton");
 
 
 // =========================================
 // UI HELPERS
 // =========================================
-
 function showView(view) {
-    loginView.classList.add("hidden");
-    otpView.classList.add("hidden");
+    authView.classList.add("hidden");
+    verifyView.classList.add("hidden");
     homeView.classList.add("hidden");
     view.classList.remove("hidden");
 }
 
-function showMessage(element, message, type = "") {
-    element.textContent = message;
-    element.className = "message";
-    if (type) element.classList.add(type);
+function showMessage(el, msg, type = "") {
+    el.textContent = msg;
+    el.className = "message";
+    if (type) el.classList.add(type);
 }
 
-function clearMessage(element) {
-    element.textContent = "";
-    element.className = "message";
+function clearMessage(el) {
+    el.textContent = "";
+    el.className = "message";
 }
 
 function setButtonLoading(button, loading) {
     const text = button.querySelector(".button-text");
     const loader = button.querySelector(".button-loader");
     button.disabled = loading;
-    text.classList.toggle("hidden", loading);
-    loader.classList.toggle("hidden", !loading);
+    if (text) text.classList.toggle("hidden", loading);
+    if (loader) loader.classList.toggle("hidden", !loading);
 }
 
 
 // =========================================
-// COUNTRY SELECTOR
+// MODE SWITCH (Sign Up <-> Sign In)
 // =========================================
+function applyMode(newMode) {
+    mode = newMode;
+    clearMessage(authMessage);
 
-function renderCountries(search = "") {
-    const query = search.trim().toLowerCase();
+    if (mode === "signup") {
+        authTitle.textContent = "Create account";
+        authSubtitle.textContent = "Sign up with your email to get started.";
+        submitButton.querySelector(".button-text").textContent = "Create account";
+        switchText.textContent = "Already have an account?";
+        switchButton.textContent = "Sign in";
+        passwordInput.setAttribute("autocomplete", "new-password");
+        passwordHint.classList.remove("error", "success");
+        passwordHint.textContent = `Minimum ${MIN_PASSWORD_LENGTH} characters.`;
+    } else {
+        authTitle.textContent = "Welcome back";
+        authSubtitle.textContent = "Sign in with your email and password.";
+        submitButton.querySelector(".button-text").textContent = "Sign in";
+        switchText.textContent = "Don't have an account?";
+        switchButton.textContent = "Sign up";
+        passwordInput.setAttribute("autocomplete", "current-password");
+        passwordHint.textContent = "";
+    }
 
-    const filtered = countries.filter(c =>
-        c.name.toLowerCase().includes(query) ||
-        c.dialCode.includes(query) ||
-        c.code.toLowerCase().includes(query)
+    passwordInput.value = "";
+    updatePasswordHint();
+}
+
+switchButton.addEventListener("click", () => {
+    applyMode(mode === "signup" ? "signin" : "signup");
+});
+
+
+// =========================================
+// PASSWORD UI
+// =========================================
+passwordToggle.addEventListener("click", () => {
+    const isPassword = passwordInput.type === "password";
+    passwordInput.type = isPassword ? "text" : "password";
+    passwordToggle.textContent = isPassword ? "🙈" : "👁";
+    passwordToggle.setAttribute(
+        "aria-label",
+        isPassword ? "Hide password" : "Show password"
     );
+});
 
-    countryList.innerHTML = "";
+function updatePasswordHint() {
+    const value = passwordInput.value;
 
-    if (!filtered.length) {
-        const empty = document.createElement("div");
-        empty.className = "country-item";
-        empty.textContent = "No countries found.";
-        countryList.appendChild(empty);
+    if (mode === "signin") {
+        passwordHint.textContent = "";
+        passwordHint.classList.remove("error", "success");
         return;
     }
 
-    filtered.forEach(country => {
-        const item = document.createElement("button");
-        item.type = "button";
-        item.className = "country-item";
-        item.setAttribute("role", "option");
-        item.innerHTML = `
-            <span class="country-flag">${country.flag}</span>
-            <span class="country-name">${country.name}</span>
-            <span class="country-code">${country.dialCode}</span>
-        `;
+    if (value.length === 0) {
+        passwordHint.textContent = `Minimum ${MIN_PASSWORD_LENGTH} characters.`;
+        passwordHint.classList.remove("error", "success");
+        return;
+    }
 
-        item.addEventListener("click", () => {
-            selectedCountry = country;
-            selectedFlag.textContent = country.flag;
-            selectedCode.textContent = country.dialCode;
-            phoneInput.value = "";
-            phonePreview.textContent = "";
-            closeCountryDropdown();
-            phoneInput.focus();
-        });
-
-        countryList.appendChild(item);
-    });
-}
-
-function openCountryDropdown() {
-    countryDropdown.classList.remove("hidden");
-    countrySelector.setAttribute("aria-expanded", "true");
-    countrySearch.value = "";
-    renderCountries();
-    setTimeout(() => countrySearch.focus(), 0);
-}
-
-function closeCountryDropdown() {
-    countryDropdown.classList.add("hidden");
-    countrySelector.setAttribute("aria-expanded", "false");
-}
-
-countrySelector.addEventListener("click", () => {
-    if (countryDropdown.classList.contains("hidden")) {
-        openCountryDropdown();
+    if (value.length < MIN_PASSWORD_LENGTH) {
+        passwordHint.textContent =
+            `${value.length} / ${MIN_PASSWORD_LENGTH} characters`;
+        passwordHint.classList.add("error");
+        passwordHint.classList.remove("success");
     } else {
-        closeCountryDropdown();
+        passwordHint.textContent = "Password length is good.";
+        passwordHint.classList.add("success");
+        passwordHint.classList.remove("error");
     }
-});
+}
 
-countrySearch.addEventListener("input", () => {
-    renderCountries(countrySearch.value);
-});
-
-document.addEventListener("click", e => {
-    if (!countryDropdown.contains(e.target) &&
-        !countrySelector.contains(e.target)) {
-        closeCountryDropdown();
-    }
-});
+passwordInput.addEventListener("input", updatePasswordHint);
 
 
 // =========================================
-// PHONE FORMATTING
+// VALIDATION
 // =========================================
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
-phoneInput.addEventListener("input", () => {
-    let value = phoneInput.value.replace(/\D/g, "");
-    if (value.length > 15) value = value.slice(0, 15);
-    phoneInput.value = value;
+function validateForm() {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
-    if (value.length >= 7) {
-        phonePreview.textContent = `Full number: ${selectedCountry.dialCode}${value}`;
-    } else {
-        phonePreview.textContent = "";
-    }
-});
-
-function normalizePhoneNumber() {
-    let number = phoneInput.value.replace(/\D/g, "");
-    const dial = selectedCountry.dialCode.replace("+", "");
-
-    if (number.startsWith(dial)) {
-        number = number.slice(dial.length);
-    }
-
-    if (number.length < 6 || number.length > 14) {
+    if (!email) {
+        showMessage(authMessage, "Please enter your email.", "error");
+        emailInput.focus();
         return null;
     }
 
-    return `${selectedCountry.dialCode}${number}`;
-}
-
-function maskPhoneNumber(phone) {
-    if (!phone) return "";
-    if (phone.length <= 7) return phone;
-
-    const visibleStart = phone.slice(0, 4);
-    const visibleEnd = phone.slice(-2);
-    const hiddenLength = Math.max(3, phone.length - 6);
-
-    return visibleStart + "•".repeat(hiddenLength) + visibleEnd;
-}
-
-
-// =========================================
-// RECAPTCHA
-// =========================================
-
-function createRecaptcha() {
-    if (recaptchaVerifier) return recaptchaVerifier;
-
-    recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-        callback: () => {},
-        "expired-callback": () => {
-            showMessage(loginMessage,
-                "Security verification expired. Please try again.",
-                "error");
-            resetRecaptcha();
-        }
-    });
-
-    return recaptchaVerifier;
-}
-
-async function resetRecaptcha() {
-    if (!recaptchaVerifier) return;
-    try {
-        await recaptchaVerifier.clear();
-    } catch (err) {
-        console.warn("Could not clear reCAPTCHA:", err);
-    }
-    recaptchaVerifier = null;
-}
-
-
-// =========================================
-// SEND OTP
-// =========================================
-
-async function sendOtp() {
-    clearMessage(loginMessage);
-
-    const phoneNumber = normalizePhoneNumber();
-
-    if (!phoneNumber) {
-        showMessage(loginMessage, "Please enter a valid phone number.", "error");
-        phoneInput.focus();
-        return;
+    if (!validateEmail(email)) {
+        showMessage(authMessage, "Please enter a valid email address.", "error");
+        emailInput.focus();
+        return null;
     }
 
-    setButtonLoading(continueButton, true);
+    if (!password) {
+        showMessage(authMessage, "Please enter your password.", "error");
+        passwordInput.focus();
+        return null;
+    }
 
-    try {
-        const verifier = createRecaptcha();
-
-        confirmationResult = await signInWithPhoneNumber(
-            auth, phoneNumber, verifier
+    if (mode === "signup" && password.length < MIN_PASSWORD_LENGTH) {
+        showMessage(
+            authMessage,
+            `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
+            "error"
         );
-
-        maskedPhone.textContent = maskPhoneNumber(phoneNumber);
-        showView(otpView);
-        otpInput.value = "";
-        otpInput.focus();
-        startResendTimer();
-
-    } catch (error) {
-        console.error("Phone auth error:", error);
-        showMessage(loginMessage, getFirebaseErrorMessage(error), "error");
-        await resetRecaptcha();
-    } finally {
-        setButtonLoading(continueButton, false);
+        passwordInput.focus();
+        return null;
     }
+
+    return { email, password };
 }
 
 
 // =========================================
-// VERIFY OTP
+// SUBMIT (Sign Up / Sign In)
 // =========================================
+authForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMessage(authMessage);
 
-async function verifyOtp() {
-    clearMessage(otpMessage);
+    const data = validateForm();
+    if (!data) return;
 
-    const code = otpInput.value.replace(/\D/g, "");
-
-    if (!confirmationResult) {
-        showMessage(otpMessage,
-            "Your verification session expired. Please request a new code.",
-            "error");
-        return;
-    }
-
-    if (!/^\d{6}$/.test(code)) {
-        showMessage(otpMessage, "Enter the 6-digit verification code.", "error");
-        otpInput.focus();
-        return;
-    }
-
-    setButtonLoading(verifyButton, true);
+    setButtonLoading(submitButton, true);
 
     try {
-        const userCredential = await confirmationResult.confirm(code);
-        const user = userCredential.user;
+        if (mode === "signup") {
+            const cred = await createUserWithEmailAndPassword(
+                auth, data.email, data.password
+            );
 
-        console.log("Firebase auth successful:", user.uid);
+            await sendEmailVerification(cred.user);
 
-        confirmationResult = null;
-        stopResendTimer();
-        showAuthenticatedUser(user);
+            console.log("Signup successful, verification email sent");
+            // onAuthStateChanged will route to verifyView
 
-    } catch (error) {
-        console.error("OTP verification error:", error);
-        showMessage(otpMessage, getFirebaseErrorMessage(error), "error");
-    } finally {
-        setButtonLoading(verifyButton, false);
-    }
-}
+        } else {
+            const cred = await signInWithEmailAndPassword(
+                auth, data.email, data.password
+            );
 
-
-// =========================================
-// RESEND OTP
-// =========================================
-
-async function resendOtp() {
-    if (resendButton.disabled) return;
-
-    const phoneNumber = normalizePhoneNumber();
-
-    if (!phoneNumber) {
-        showMessage(otpMessage,
-            "Please go back and enter your phone number again.", "error");
-        return;
-    }
-
-    resendButton.disabled = true;
-    clearMessage(otpMessage);
-
-    try {
-        await resetRecaptcha();
-        const verifier = createRecaptcha();
-
-        confirmationResult = await signInWithPhoneNumber(
-            auth, phoneNumber, verifier
-        );
-
-        showMessage(otpMessage,
-            "A new verification code has been sent.", "success");
-
-        startResendTimer();
-
-    } catch (error) {
-        console.error("Resend OTP error:", error);
-        showMessage(otpMessage, getFirebaseErrorMessage(error), "error");
-        resendButton.disabled = false;
-        await resetRecaptcha();
-    }
-}
-
-
-// =========================================
-// RESEND TIMER
-// =========================================
-
-function startResendTimer() {
-    stopResendTimer();
-    resendSeconds = 60;
-    resendButton.disabled = true;
-    updateResendTimer();
-
-    resendTimer = setInterval(() => {
-        resendSeconds--;
-        updateResendTimer();
-
-        if (resendSeconds <= 0) {
-            stopResendTimer();
-            resendButton.disabled = false;
-            resendTimerText.textContent = "You can request another code.";
+            if (!cred.user.emailVerified) {
+                // Ensure a fresh verification link exists
+                try {
+                    await sendEmailVerification(cred.user);
+                } catch (err) {
+                    console.warn("Could not resend verification:", err);
+                }
+                // onAuthStateChanged will route to verifyView
+            }
+            // else onAuthStateChanged will route to homeView
         }
-    }, 1000);
-}
 
-function updateResendTimer() {
-    resendTimerText.innerHTML =
-        `Resend code in <strong>${resendSeconds}s</strong>`;
-}
-
-function stopResendTimer() {
-    if (resendTimer) {
-        clearInterval(resendTimer);
-        resendTimer = null;
+    } catch (error) {
+        console.error("Auth error:", error);
+        showMessage(authMessage, getAuthErrorMessage(error), "error");
+    } finally {
+        setButtonLoading(submitButton, false);
     }
-}
+});
 
 
 // =========================================
-// BACK TO PHONE
+// VERIFY VIEW ACTIONS
 // =========================================
+verifiedButton.addEventListener("click", async () => {
+    clearMessage(verifyMessage);
 
-function goBackToPhone() {
-    stopResendTimer();
-    confirmationResult = null;
-    clearMessage(otpMessage);
-    showView(loginView);
-    phoneInput.focus();
-}
+    const user = auth.currentUser;
+    if (!user) {
+        showMessage(verifyMessage, "Session expired. Please sign in again.", "error");
+        showView(authView);
+        return;
+    }
+
+    setButtonLoading(verifiedButton, true);
+
+    try {
+        await user.reload();
+
+        if (auth.currentUser.emailVerified) {
+            showMessage(verifyMessage, "Email verified! Redirecting...", "success");
+            setTimeout(() => routeUser(auth.currentUser), 400);
+        } else {
+            showMessage(
+                verifyMessage,
+                "Email not verified yet. Please click the link in your inbox first.",
+                "error"
+            );
+        }
+    } catch (error) {
+        console.error("Reload error:", error);
+        showMessage(verifyMessage, "Could not check verification status.", "error");
+    } finally {
+        setButtonLoading(verifiedButton, false);
+    }
+});
+
+resendVerifyButton.addEventListener("click", async () => {
+    clearMessage(verifyMessage);
+
+    const user = auth.currentUser;
+    if (!user) {
+        showMessage(verifyMessage, "Session expired. Please sign in again.", "error");
+        showView(authView);
+        return;
+    }
+
+    resendVerifyButton.disabled = true;
+
+    try {
+        await sendEmailVerification(user);
+        showMessage(verifyMessage, "Verification email sent.", "success");
+    } catch (error) {
+        console.error("Resend error:", error);
+        showMessage(verifyMessage, getAuthErrorMessage(error), "error");
+    } finally {
+        setTimeout(() => { resendVerifyButton.disabled = false; }, 3000);
+    }
+});
+
+logoutVerifyButton.addEventListener("click", async () => {
+    try {
+        await signOut(auth);
+    } catch (error) {
+        console.error("Logout error:", error);
+    }
+});
 
 
 // =========================================
-// AUTHENTICATED USER
+// HOME ACTIONS
 // =========================================
-
-function showAuthenticatedUser(user) {
-    document.getElementById("userUid").textContent = user.uid;
-    document.getElementById("userPhone").textContent =
-        user.phoneNumber || "Not available";
-    showView(homeView);
-}
-
-
-// =========================================
-// LOGOUT
-// =========================================
-
 logoutButton.addEventListener("click", async () => {
     logoutButton.disabled = true;
     try {
@@ -1099,75 +961,76 @@ logoutButton.addEventListener("click", async () => {
 
 
 // =========================================
+// ROUTER
+// =========================================
+function routeUser(user) {
+    if (!user) {
+        showView(authView);
+        return;
+    }
+
+    if (!user.emailVerified) {
+        verifyEmail.textContent = user.email;
+        clearMessage(verifyMessage);
+        showView(verifyView);
+        return;
+    }
+
+    userEmail.textContent = user.email || "—";
+    userUid.textContent = user.uid;
+    showView(homeView);
+}
+
+
+// =========================================
 // AUTH STATE LISTENER
 // =========================================
-
-onAuthStateChanged(auth, user => {
-    if (user) {
-        showAuthenticatedUser(user);
-    } else {
-        showView(loginView);
-    }
-});
-
-
-// =========================================
-// EVENT LISTENERS
-// =========================================
-
-phoneForm.addEventListener("submit", e => {
-    e.preventDefault();
-    sendOtp();
-});
-
-otpForm.addEventListener("submit", e => {
-    e.preventDefault();
-    verifyOtp();
-});
-
-resendButton.addEventListener("click", resendOtp);
-backButton.addEventListener("click", goBackToPhone);
-
-otpInput.addEventListener("input", () => {
-    otpInput.value = otpInput.value.replace(/\D/g, "").slice(0, 6);
+onAuthStateChanged(auth, (user) => {
+    routeUser(user);
 });
 
 
 // =========================================
 // FIREBASE ERROR MESSAGES
 // =========================================
-
-function getFirebaseErrorMessage(error) {
+function getAuthErrorMessage(error) {
     const code = error?.code || "";
 
     const messages = {
-        "auth/invalid-phone-number": "The phone number is not valid.",
-        "auth/missing-phone-number": "Please enter your phone number.",
-        "auth/too-many-requests": "Too many attempts. Please wait and try again later.",
-        "auth/quota-exceeded": "SMS quota has been exceeded. Please try again later.",
-        "auth/invalid-verification-code": "The verification code is incorrect.",
-        "auth/code-expired": "The verification code has expired. Request a new code.",
-        "auth/session-expired": "Your verification session expired. Please request a new code.",
-        "auth/captcha-check-failed": "Security verification failed. Please try again.",
-        "auth/invalid-app-credential": "Firebase could not verify this application. Check your authorized domain and reCAPTCHA setup.",
-        "auth/app-not-authorized": "This domain is not authorized in Firebase Authentication.",
-        "auth/operation-not-allowed": "Phone Authentication is not enabled in Firebase Console.",
-        "auth/network-request-failed": "Network error. Check your internet connection.",
-        "auth/user-disabled": "This account has been disabled.",
-        "auth/credential-already-in-use": "This phone number is already associated with another account."
+        "auth/email-already-in-use":
+            "This email is already registered. Try signing in instead.",
+        "auth/invalid-email":
+            "The email address is not valid.",
+        "auth/weak-password":
+            `Password is too weak. Use at least ${MIN_PASSWORD_LENGTH} characters.`,
+        "auth/operation-not-allowed":
+            "Email/Password sign-in is not enabled in Firebase Console.",
+        "auth/user-not-found":
+            "No account found with this email.",
+        "auth/wrong-password":
+            "Incorrect password. Please try again.",
+        "auth/invalid-credential":
+            "Incorrect email or password.",
+        "auth/too-many-requests":
+            "Too many attempts. Please wait and try again.",
+        "auth/network-request-failed":
+            "Network error. Check your internet connection.",
+        "auth/user-disabled":
+            "This account has been disabled.",
+        "auth/requires-recent-login":
+            "Please sign in again to continue."
     };
 
-    return messages[code] || error?.message || "Authentication failed. Please try again.";
+    return messages[code]
+        || error?.message
+        || "Authentication failed. Please try again.";
 }
 
 
 // =========================================
-// INITIAL COUNTRY
+// INIT
 // =========================================
-
-selectedFlag.textContent = selectedCountry.flag;
-selectedCode.textContent = selectedCountry.dialCode;
-renderCountries();
+applyMode("signup");
 
 </script>
 
