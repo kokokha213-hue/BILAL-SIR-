@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="description" content="Secure messaging application">
 <title>Messenger</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#07111f">
 
 <style>
 :root {
@@ -264,7 +266,6 @@ input, textarea { font: inherit; }
 
 .back-link:hover { color: var(--text); }
 
-/* APP HEADER */
 .app-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 14px 18px; margin-bottom: 18px;
@@ -300,7 +301,7 @@ input, textarea { font: inherit; }
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-.app-header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.app-header-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
 
 .icon-button {
     width: 38px; height: 38px;
@@ -311,11 +312,21 @@ input, textarea { font: inherit; }
     cursor: pointer; font-size: 15px;
     display: grid; place-items: center;
     transition: background 0.2s;
+    position: relative;
 }
 
 .icon-button:hover { background: rgba(255,255,255,0.08); }
 
-/* TABS */
+.icon-button.notif-on {
+    color: var(--primary);
+    border-color: rgba(39, 211, 162, 0.4);
+}
+
+.icon-button.notif-off {
+    color: var(--muted);
+    opacity: 0.6;
+}
+
 .tabs-row { display: flex; gap: 6px; margin-bottom: 16px; }
 
 .tab-button {
@@ -356,7 +367,6 @@ input, textarea { font: inherit; }
     to { transform: scale(1); }
 }
 
-/* USER LIST */
 .search-row { margin-bottom: 16px; }
 .user-list { display: flex; flex-direction: column; gap: 8px; }
 
@@ -446,9 +456,7 @@ input, textarea { font: inherit; }
     display: grid; place-items: center;
 }
 
-.user-card-action {
-    flex-shrink: 0;
-}
+.user-card-action { flex-shrink: 0; }
 
 .small-button {
     padding: 8px 14px;
@@ -477,9 +485,7 @@ input, textarea { font: inherit; }
     border: 1px solid var(--input-border);
 }
 
-.small-button.secondary:hover:not(:disabled) {
-    background: rgba(255,255,255,0.1);
-}
+.small-button.secondary:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
 
 .small-button.danger {
     background: rgba(255, 107, 122, 0.12);
@@ -487,14 +493,9 @@ input, textarea { font: inherit; }
     border: 1px solid rgba(255, 107, 122, 0.3);
 }
 
-.small-button.danger:hover:not(:disabled) {
-    background: rgba(255, 107, 122, 0.2);
-}
+.small-button.danger:hover:not(:disabled) { background: rgba(255, 107, 122, 0.2); }
 
-.small-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
+.small-button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .status-pill {
     padding: 6px 12px;
@@ -536,7 +537,6 @@ input, textarea { font: inherit; }
 
 .section-title:first-child { margin-top: 0; }
 
-/* CHAT VIEW */
 .chat-header {
     display: flex; align-items: center; gap: 12px;
     padding: 14px; margin-bottom: 14px;
@@ -710,7 +710,6 @@ input, textarea { font: inherit; }
     width: 16px; height: 16px;
 }
 
-/* SETTINGS MODAL */
 .modal-overlay {
     position: fixed; inset: 0;
     background: rgba(0, 0, 0, 0.6);
@@ -772,6 +771,55 @@ input, textarea { font: inherit; }
     overflow-wrap: anywhere; text-align: right; font-size: 13px;
 }
 
+.banner {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(245, 185, 66, 0.3);
+    border-radius: 14px;
+    background: rgba(245, 185, 66, 0.08);
+    color: var(--warning);
+    font-size: 13px;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: cardIn 0.3s ease;
+}
+
+.banner-icon { font-size: 18px; flex-shrink: 0; }
+
+.banner-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.banner-button {
+    padding: 6px 12px;
+    border: 0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.banner-button.primary {
+    background: var(--warning);
+    color: #04130e;
+}
+
+.banner-button.primary:hover { filter: brightness(1.1); }
+
+.banner-button.secondary {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+}
+
+.banner-button.secondary:hover { background: rgba(255,255,255,0.15); }
+
 @media (max-width: 520px) {
     .app-shell { align-items: flex-start; padding: 14px; padding-top: 24px; }
     .auth-card { padding: 25px 20px; border-radius: 21px; }
@@ -781,6 +829,8 @@ input, textarea { font: inherit; }
     .messages-area { height: 60vh; }
     .message-row { max-width: 85%; }
     .tab-button { font-size: 11px; padding: 10px 4px; }
+    .banner { flex-direction: column; align-items: flex-start; }
+    .banner-actions { margin-left: 0; width: 100%; }
 }
 
 @media (prefers-color-scheme: light) {
@@ -963,6 +1013,15 @@ input, textarea { font: inherit; }
     <!-- HOME VIEW -->
     <section id="homeView" class="wide-view hidden">
 
+        <div id="notificationBanner" class="banner hidden">
+            <span class="banner-icon">🔔</span>
+            <span>Enable notifications to get alerts for new messages and requests.</span>
+            <div class="banner-actions">
+                <button id="enableNotifButton" class="banner-button primary">Enable</button>
+                <button id="dismissNotifButton" class="banner-button secondary">Later</button>
+            </div>
+        </div>
+
         <div class="app-header">
             <div class="app-header-left">
                 <div class="app-header-avatar" id="headerAvatar">U</div>
@@ -972,6 +1031,7 @@ input, textarea { font: inherit; }
                 </div>
             </div>
             <div class="app-header-actions">
+                <button class="icon-button notif-off" id="notifToggle" title="Notifications">🔔</button>
                 <button class="icon-button" id="refreshButton" title="Refresh">⟳</button>
                 <button class="icon-button" id="settingsButton" title="Settings">⚙</button>
             </div>
@@ -1067,6 +1127,10 @@ input, textarea { font: inherit; }
                 <strong id="settingsVerified">Verified</strong>
             </div>
             <div class="settings-row">
+                <span>Notifications</span>
+                <strong id="settingsNotifStatus">—</strong>
+            </div>
+            <div class="settings-row">
                 <span>User ID</span>
                 <strong id="settingsUid">—</strong>
             </div>
@@ -1081,6 +1145,15 @@ input, textarea { font: inherit; }
                 Save display name
             </button>
             <div id="settingsMessage" class="message" role="alert"></div>
+        </div>
+
+        <div class="modal-section">
+            <h4>Notifications</h4>
+            <p>Get alerted about new messages and requests.</p>
+            <button id="settingsNotifButton" class="secondary-button" style="margin-top: 0;">
+                Enable notifications
+            </button>
+            <div id="settingsNotifMessage" class="message" role="alert"></div>
         </div>
 
         <div class="modal-section">
@@ -1121,6 +1194,14 @@ import {
 } from
     "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
+import {
+    getMessaging,
+    getToken,
+    onMessage,
+    isSupported as isMessagingSupported
+} from
+    "https://www.gstatic.com/firebasejs/12.3.0/firebase-messaging.js";
+
 
 // =========================================
 // CONFIG
@@ -1134,6 +1215,8 @@ const firebaseConfig = {
     appId: "1:293067062135:web:b3746da488d4145436ff72",
     measurementId: "G-SD3DXYLE0M"
 };
+
+const VAPID_KEY = "BItHwlwddFPALRtTCwdehJRafK7bPTbqugi-aUL0OkAM4IgC-ACFljTyCJDoAbWHimTBsH816WY-_pya1FZbwWg";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -1165,16 +1248,17 @@ let chatsUnsubscribe = null;
 let requestsUnsubscribe = null;
 let typingUnsubscribe = null;
 let activeTab = "chats";
+let messaging = null;
+let fcmToken = null;
+let messagingSupported = false;
 
 let myTypingTimeout = null;
 let lastTypingSent = false;
 let markReadTimeout = null;
 
-// Cache of accepted chat partners (Set of UIDs)
 let acceptedPartners = new Set();
-// Cache of pending requests (from/to)
-let outgoingPending = new Set();  // UIDs I sent request to (still pending)
-let incomingPending = new Set();  // UIDs who sent me request (still pending)
+let outgoingPending = new Set();
+let incomingPending = new Set();
 
 
 // =========================================
@@ -1224,6 +1308,11 @@ const displayNameInput    = document.getElementById("displayNameInput");
 const profileMessage      = document.getElementById("profileMessage");
 const profileSubmitButton = document.getElementById("profileSubmitButton");
 
+const notificationBanner  = document.getElementById("notificationBanner");
+const enableNotifButton   = document.getElementById("enableNotifButton");
+const dismissNotifButton  = document.getElementById("dismissNotifButton");
+const notifToggle         = document.getElementById("notifToggle");
+
 const headerAvatar        = document.getElementById("headerAvatar");
 const headerName          = document.getElementById("headerName");
 const headerEmail         = document.getElementById("headerEmail");
@@ -1258,9 +1347,12 @@ const settingsClose       = document.getElementById("settingsClose");
 const settingsDisplayName = document.getElementById("settingsDisplayName");
 const settingsEmail       = document.getElementById("settingsEmail");
 const settingsVerified    = document.getElementById("settingsVerified");
+const settingsNotifStatus = document.getElementById("settingsNotifStatus");
 const settingsUid         = document.getElementById("settingsUid");
 const settingsDisplayNameInput = document.getElementById("settingsDisplayNameInput");
 const settingsSaveName    = document.getElementById("settingsSaveName");
+const settingsNotifButton = document.getElementById("settingsNotifButton");
+const settingsNotifMessage = document.getElementById("settingsNotifMessage");
 const settingsSendReset   = document.getElementById("settingsSendReset");
 const settingsMessage     = document.getElementById("settingsMessage");
 const settingsSignOut     = document.getElementById("settingsSignOut");
@@ -1367,9 +1459,7 @@ async function setOnlineStatus(isOnline) {
             online: isOnline,
             lastSeen: serverTimestamp()
         });
-    } catch (error) {
-        console.warn("Presence update failed:", error);
-    }
+    } catch (error) {}
 }
 
 let heartbeatInterval = null;
@@ -1404,6 +1494,234 @@ document.addEventListener("visibilitychange", () => {
     } else {
         setOnlineStatus(false);
     }
+});
+
+
+// =========================================
+// NOTIFICATIONS (FCM)
+// =========================================
+async function initMessaging() {
+    try {
+        messagingSupported = await isMessagingSupported();
+        if (!messagingSupported) {
+            console.warn("FCM not supported in this browser");
+            return null;
+        }
+        messaging = getMessaging(app);
+
+        // Foreground message handler (jab tab active ho)
+        onMessage(messaging, (payload) => {
+            console.log("Foreground message:", payload);
+
+            const data = payload.data || {};
+            const title = (payload.notification && payload.notification.title) || data.title || "New message";
+            const body = (payload.notification && payload.notification.body) || data.body || "";
+
+            showForegroundNotification(title, body, data);
+
+            // In-app update: agar ye message current chat ka hai, mark read
+            if (data.chatId && data.chatId === currentChatId) {
+                markChatAsRead(currentChatId);
+            }
+        });
+
+        return messaging;
+    } catch (error) {
+        console.warn("initMessaging error:", error);
+        return null;
+    }
+}
+
+function showForegroundNotification(title, body, data) {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+    if (document.visibilityState === "visible") return; // don't spam when tab is active
+
+    const notification = new Notification(title, {
+        body: body,
+        icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQ4IiBmaWxsPSIjMDcxMTFmIi8+PHBhdGggZD0iTTk2IDQ4IEw2MCAxMjAgTDEwMCAxMDQgTDEzMiAxNDQgTDEwMCAxMjAgTDk2IDQ4IFoiIGZpbGw9IiM0Y2U3YmQiLz48L3N2Zz4=",
+        tag: data.chatId || "messenger",
+        data: data
+    });
+
+    notification.onclick = () => {
+        window.focus();
+        notification.close();
+        if (data.otherUid) {
+            // Try to open the chat
+            handleOpenChatFromNotification(data.otherUid);
+        }
+    };
+}
+
+async function handleOpenChatFromNotification(otherUid) {
+    try {
+        const profile = await getUserProfile(otherUid);
+        if (profile && acceptedPartners.has(otherUid)) {
+            await openChatWith(profile);
+        }
+    } catch (e) {
+        console.warn("openChatFromNotification error:", e);
+    }
+}
+
+// Service worker se click handling
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data && event.data.type === "OPEN_CHAT") {
+            handleOpenChatFromNotification(event.data.otherUid);
+        }
+    });
+}
+
+async function requestNotificationPermission() {
+    if (!messagingSupported) {
+        return { ok: false, reason: "not_supported" };
+    }
+
+    if (!("Notification" in window)) {
+        return { ok: false, reason: "not_supported" };
+    }
+
+    let permission = Notification.permission;
+
+    if (permission === "default") {
+        permission = await Notification.requestPermission();
+    }
+
+    if (permission !== "granted") {
+        updateNotifUI();
+        return { ok: false, reason: "denied" };
+    }
+
+    try {
+        fcmToken = await getToken(messaging, { vapidKey: VAPID_KEY });
+
+        if (fcmToken) {
+            // Save token to user profile
+            await updateDoc(doc(db, USERS_COLLECTION, auth.currentUser.uid), {
+                fcmToken: fcmToken,
+                fcmUpdatedAt: serverTimestamp()
+            });
+            updateNotifUI();
+            return { ok: true };
+        } else {
+            updateNotifUI();
+            return { ok: false, reason: "no_token" };
+        }
+    } catch (error) {
+        console.error("getToken error:", error);
+        updateNotifUI();
+        return { ok: false, reason: "error", error };
+    }
+}
+
+function isNotifEnabled() {
+    return "Notification" in window && Notification.permission === "granted" && fcmToken;
+}
+
+function updateNotifUI() {
+    const enabled = isNotifEnabled();
+
+    if (notifToggle) {
+        if (enabled) {
+            notifToggle.classList.remove("notif-off");
+            notifToggle.classList.add("notif-on");
+            notifToggle.title = "Notifications enabled";
+            notifToggle.textContent = "🔔";
+        } else {
+            notifToggle.classList.remove("notif-on");
+            notifToggle.classList.add("notif-off");
+            notifToggle.title = "Notifications disabled";
+            notifToggle.textContent = "🔕";
+        }
+    }
+
+    if (settingsNotifStatus) {
+        if (enabled) {
+            settingsNotifStatus.textContent = "Enabled";
+            settingsNotifStatus.style.color = "var(--success)";
+        } else if ("Notification" in window && Notification.permission === "denied") {
+            settingsNotifStatus.textContent = "Blocked";
+            settingsNotifStatus.style.color = "var(--danger)";
+        } else {
+            settingsNotifStatus.textContent = "Disabled";
+            settingsNotifStatus.style.color = "var(--muted)";
+        }
+    }
+
+    if (settingsNotifButton) {
+        if (enabled) {
+            settingsNotifButton.textContent = "Notifications enabled ✓";
+            settingsNotifButton.disabled = true;
+        } else if ("Notification" in window && Notification.permission === "denied") {
+            settingsNotifButton.textContent = "Blocked in browser settings";
+            settingsNotifButton.disabled = true;
+        } else {
+            settingsNotifButton.textContent = "Enable notifications";
+            settingsNotifButton.disabled = false;
+        }
+    }
+
+    // Banner
+    if (notificationBanner) {
+        const dismissed = localStorage.getItem("notifBannerDismissed") === "1";
+        if (!enabled && !dismissed && messagingSupported &&
+            (!("Notification" in window) || Notification.permission !== "denied")) {
+            notificationBanner.classList.remove("hidden");
+        } else {
+            notificationBanner.classList.add("hidden");
+        }
+    }
+}
+
+enableNotifButton.addEventListener("click", async () => {
+    enableNotifButton.disabled = true;
+    enableNotifButton.textContent = "Enabling...";
+    const result = await requestNotificationPermission();
+    if (!result.ok) {
+        if (result.reason === "denied") {
+            alert("Notifications blocked. Please enable them in your browser settings.");
+        } else if (result.reason === "not_supported") {
+            alert("Notifications are not supported in this browser.");
+        } else {
+            alert("Could not enable notifications. Please try again.");
+        }
+    }
+    updateNotifUI();
+});
+
+dismissNotifButton.addEventListener("click", () => {
+    localStorage.setItem("notifBannerDismissed", "1");
+    updateNotifUI();
+});
+
+notifToggle.addEventListener("click", async () => {
+    if (isNotifEnabled()) {
+        // Already enabled — just inform
+        alert("Notifications are enabled. You can disable them from browser settings.");
+        return;
+    }
+    const result = await requestNotificationPermission();
+    if (!result.ok && result.reason === "denied") {
+        alert("Notifications blocked. Please enable them from browser settings.");
+    }
+    updateNotifUI();
+});
+
+settingsNotifButton.addEventListener("click", async () => {
+    settingsNotifButton.disabled = true;
+    settingsNotifButton.textContent = "Enabling...";
+    const result = await requestNotificationPermission();
+    if (!result.ok) {
+        if (result.reason === "denied") {
+            showMessage(settingsNotifMessage, "Notifications blocked. Enable them from browser settings.", "error");
+        } else {
+            showMessage(settingsNotifMessage, "Could not enable notifications.", "error");
+        }
+    } else {
+        showMessage(settingsNotifMessage, "Notifications enabled.", "success");
+    }
+    updateNotifUI();
 });
 
 
@@ -1702,9 +2020,22 @@ async function loadHome() {
     showView(homeView);
     await refreshRelationships();
     switchTab("chats");
+    updateNotifUI();
+    handleUrlParams();
 }
 
-// Load accepted partners + pending requests into caches
+function handleUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    const otherUid = params.get("openChat");
+    if (otherUid) {
+        // Clean URL
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, "", newUrl);
+        // Try to open that chat
+        setTimeout(() => handleOpenChatFromNotification(otherUid), 500);
+    }
+}
+
 async function refreshRelationships() {
     const uid = auth.currentUser.uid;
     acceptedPartners = new Set();
@@ -1712,7 +2043,6 @@ async function refreshRelationships() {
     incomingPending = new Set();
 
     try {
-        // Chats = accepted partners
         const chatsRef = collection(db, CHATS_COLLECTION);
         const qChats = query(chatsRef, where("participants", "array-contains", uid));
         const chatsSnap = await getDocs(qChats);
@@ -1723,7 +2053,6 @@ async function refreshRelationships() {
             });
         });
 
-        // Requests where I'm sender
         const reqRef1 = collection(db, REQUESTS_COLLECTION);
         const q1 = query(reqRef1, where("fromUid", "==", uid), where("status", "==", "pending"));
         const snap1 = await getDocs(q1);
@@ -1732,7 +2061,6 @@ async function refreshRelationships() {
             outgoingPending.add(data.toUid);
         });
 
-        // Requests where I'm receiver
         const q2 = query(reqRef1, where("toUid", "==", uid), where("status", "==", "pending"));
         const snap2 = await getDocs(q2);
         snap2.forEach(d => {
@@ -1783,7 +2111,7 @@ tabFind.addEventListener("click", () => switchTab("find"));
 
 
 // =========================================
-// FIND PEOPLE — EXACT EMAIL SEARCH ONLY
+// FIND PEOPLE
 // =========================================
 async function searchUserByExactEmail(email) {
     userList.innerHTML = "";
@@ -1832,38 +2160,23 @@ async function searchUserByExactEmail(email) {
 
 function renderFoundUser(user) {
     const uid = auth.currentUser.uid;
-
     const isAccepted = acceptedPartners.has(user.uid);
     const isOutgoing = outgoingPending.has(user.uid);
     const isIncoming = incomingPending.has(user.uid);
-
     const online = isUserOnline(user);
 
     const card = document.createElement("div");
     card.className = "user-card";
 
     let actionHTML = "";
-
     if (isAccepted) {
-        actionHTML = `
-            <div class="user-card-action">
-                <button class="small-button primary" data-action="chat">Chat</button>
-            </div>`;
+        actionHTML = `<div class="user-card-action"><button class="small-button primary" data-action="chat">Chat</button></div>`;
     } else if (isOutgoing) {
-        actionHTML = `
-            <div class="user-card-action">
-                <span class="status-pill sent">Request Sent</span>
-            </div>`;
+        actionHTML = `<div class="user-card-action"><span class="status-pill sent">Request Sent</span></div>`;
     } else if (isIncoming) {
-        actionHTML = `
-            <div class="user-card-action">
-                <button class="small-button primary" data-action="accept">Accept</button>
-            </div>`;
+        actionHTML = `<div class="user-card-action"><button class="small-button primary" data-action="accept">Accept</button></div>`;
     } else {
-        actionHTML = `
-            <div class="user-card-action">
-                <button class="small-button primary" data-action="request">Send Request</button>
-            </div>`;
+        actionHTML = `<div class="user-card-action"><button class="small-button primary" data-action="request">Send Request</button></div>`;
     }
 
     card.innerHTML = `
@@ -1878,17 +2191,12 @@ function renderFoundUser(user) {
         ${actionHTML}
     `;
 
-    // Attach action
     const actionBtn = card.querySelector("button[data-action]");
     if (actionBtn) {
         const action = actionBtn.dataset.action;
-        if (action === "chat") {
-            actionBtn.addEventListener("click", () => openChatWith(user));
-        } else if (action === "accept") {
-            actionBtn.addEventListener("click", () => acceptRequestFrom(user, actionBtn));
-        } else if (action === "request") {
-            actionBtn.addEventListener("click", () => sendRequest(user, actionBtn));
-        }
+        if (action === "chat") actionBtn.addEventListener("click", () => openChatWith(user));
+        else if (action === "accept") actionBtn.addEventListener("click", () => acceptRequestFrom(user, actionBtn));
+        else if (action === "request") actionBtn.addEventListener("click", () => sendRequest(user, actionBtn));
     }
 
     userList.appendChild(card);
@@ -1899,9 +2207,8 @@ userSearchInput.addEventListener("input", (e) => {
     const value = e.target.value.trim().toLowerCase();
     clearMessage(homeMessage);
     window.__searchTimeout = setTimeout(() => {
-        if (value.length >= 5) {
-            searchUserByExactEmail(value);
-        } else if (value.length === 0) {
+        if (value.length >= 5) searchUserByExactEmail(value);
+        else if (value.length === 0) {
             userList.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-state-icon">🔍</div>
@@ -1913,11 +2220,10 @@ userSearchInput.addEventListener("input", (e) => {
 
 
 // =========================================
-// REQUESTS (send / accept / reject / cancel)
+// REQUESTS
 // =========================================
 async function sendRequest(toUser, buttonEl) {
     const uid = auth.currentUser.uid;
-
     if (buttonEl) { buttonEl.disabled = true; buttonEl.textContent = "Sending..."; }
 
     try {
@@ -1936,26 +2242,19 @@ async function sendRequest(toUser, buttonEl) {
         outgoingPending.add(toUser.uid);
         await refreshRelationships();
 
-        if (buttonEl) {
-            buttonEl.outerHTML = `<span class="status-pill sent">Request Sent</span>`;
-        }
+        if (buttonEl) buttonEl.outerHTML = `<span class="status-pill sent">Request Sent</span>`;
     } catch (error) {
         console.error("sendRequest error:", error);
-        if (buttonEl) {
-            buttonEl.disabled = false;
-            buttonEl.textContent = "Send Request";
-        }
-        alert("Could not send request. Try again.");
+        if (buttonEl) { buttonEl.disabled = false; buttonEl.textContent = "Send Request"; }
+        alert("Could not send request.");
     }
 }
 
 async function acceptRequestFrom(fromUser, buttonEl) {
     const uid = auth.currentUser.uid;
-
     if (buttonEl) { buttonEl.disabled = true; buttonEl.textContent = "Accepting..."; }
 
     try {
-        // Find the pending request doc
         const reqRef = collection(db, REQUESTS_COLLECTION);
         const q = query(reqRef,
             where("fromUid", "==", fromUser.uid),
@@ -1964,7 +2263,6 @@ async function acceptRequestFrom(fromUser, buttonEl) {
             limit(1)
         );
         const snap = await getDocs(q);
-
         if (snap.empty) throw new Error("Request not found");
 
         const docRef = snap.docs[0].ref;
@@ -1973,30 +2271,23 @@ async function acceptRequestFrom(fromUser, buttonEl) {
             respondedAt: serverTimestamp()
         });
 
-        // Create the chat document
         await ensureChatDocument(uid, fromUser.uid);
-
         await refreshRelationships();
 
         if (buttonEl) {
             buttonEl.outerHTML = `<button class="small-button primary" data-action="chat">Chat</button>`;
-            // Re-attach chat
             const newBtn = document.querySelector(`button[data-action="chat"]`);
             if (newBtn) newBtn.addEventListener("click", () => openChatWith(fromUser));
         }
     } catch (error) {
         console.error("acceptRequestFrom error:", error);
-        if (buttonEl) {
-            buttonEl.disabled = false;
-            buttonEl.textContent = "Accept";
-        }
-        alert("Could not accept request. Try again.");
+        if (buttonEl) { buttonEl.disabled = false; buttonEl.textContent = "Accept"; }
+        alert("Could not accept request.");
     }
 }
 
 async function rejectRequest(requestDoc, buttonEl) {
-    if (buttonEl) { buttonEl.disabled = true; }
-
+    if (buttonEl) buttonEl.disabled = true;
     try {
         await updateDoc(requestDoc.ref, {
             status: "rejected",
@@ -2010,8 +2301,7 @@ async function rejectRequest(requestDoc, buttonEl) {
 }
 
 async function cancelRequest(requestDoc, buttonEl) {
-    if (buttonEl) { buttonEl.disabled = true; }
-
+    if (buttonEl) buttonEl.disabled = true;
     try {
         await deleteDoc(requestDoc.ref);
         await refreshRelationships();
@@ -2028,11 +2318,9 @@ async function cancelRequest(requestDoc, buttonEl) {
 // =========================================
 function startRequestsListener() {
     stopRequestsListener();
-
     const uid = auth.currentUser.uid;
     const reqRef = collection(db, REQUESTS_COLLECTION);
 
-    // Incoming pending
     const qIn = query(reqRef,
         where("toUid", "==", uid),
         where("status", "==", "pending")
@@ -2042,7 +2330,6 @@ function startRequestsListener() {
         const incoming = [];
         snapIn.forEach(d => incoming.push({ id: d.id, ref: d.ref, ...d.data() }));
 
-        // Also load outgoing pending separately
         let outgoing = [];
         try {
             const qOut = query(reqRef,
@@ -2051,9 +2338,7 @@ function startRequestsListener() {
             );
             const snapOut = await getDocs(qOut);
             snapOut.forEach(d => outgoing.push({ id: d.id, ref: d.ref, ...d.data() }));
-        } catch (e) {
-            console.warn("outgoing fetch error:", e);
-        }
+        } catch (e) {}
 
         renderRequests(incoming, outgoing);
     }, (error) => {
@@ -2076,9 +2361,8 @@ function stopRequestsListener() {
 function renderRequests(incoming, outgoing) {
     requestsList.innerHTML = "";
 
-    const incomingBadgeCount = incoming.length;
-    if (incomingBadgeCount > 0) {
-        requestsTotalBadge.textContent = incomingBadgeCount > 99 ? "99+" : incomingBadgeCount;
+    if (incoming.length > 0) {
+        requestsTotalBadge.textContent = incoming.length > 99 ? "99+" : incoming.length;
         requestsTotalBadge.classList.remove("hidden");
     } else {
         requestsTotalBadge.classList.add("hidden");
@@ -2114,17 +2398,12 @@ function renderRequests(incoming, outgoing) {
                     <button class="small-button danger" data-action="reject">Reject</button>
                 </div>
             `;
-            const acceptBtn = card.querySelector('[data-action="accept"]');
-            const rejectBtn = card.querySelector('[data-action="reject"]');
-
-            acceptBtn.addEventListener("click", () => acceptRequestFrom({
+            card.querySelector('[data-action="accept"]').addEventListener("click", () => acceptRequestFrom({
                 uid: req.fromUid,
                 email: req.fromEmail,
                 displayName: req.fromName
-            }, acceptBtn));
-
-            rejectBtn.addEventListener("click", () => rejectRequest(req, rejectBtn));
-
+            }, card.querySelector('[data-action="accept"]')));
+            card.querySelector('[data-action="reject"]').addEventListener("click", () => rejectRequest(req, card.querySelector('[data-action="reject"]')));
             requestsList.appendChild(card);
         });
     }
@@ -2148,8 +2427,7 @@ function renderRequests(incoming, outgoing) {
                     <button class="small-button secondary" data-action="cancel">Cancel</button>
                 </div>
             `;
-            const cancelBtn = card.querySelector('[data-action="cancel"]');
-            cancelBtn.addEventListener("click", () => cancelRequest(req, cancelBtn));
+            card.querySelector('[data-action="cancel"]').addEventListener("click", () => cancelRequest(req, card.querySelector('[data-action="cancel"]')));
             requestsList.appendChild(card);
         });
     }
@@ -2285,7 +2563,6 @@ async function ensureChatDocument(uidA, uidB) {
 async function openChatWith(otherUser, existingChatId) {
     const uid = auth.currentUser.uid;
 
-    // Safety check — must be accepted partner
     if (!acceptedPartners.has(otherUser.uid) && !existingChatId) {
         alert("You can only chat with accepted contacts.");
         return;
@@ -2404,9 +2681,7 @@ async function markChatAsRead(chatId) {
         await updateDoc(chatRef, {
             [`unread.${uid}`]: 0
         });
-    } catch (error) {
-        console.warn("markChatAsRead error:", error);
-    }
+    } catch (error) {}
 }
 
 function stopMessagesListener() {
@@ -2486,7 +2761,7 @@ chatBackButton.addEventListener("click", () => {
 
 
 // =========================================
-// TYPING INDICATOR
+// TYPING
 // =========================================
 function startTypingListener(chatId, otherUid) {
     stopTypingListener();
@@ -2506,9 +2781,7 @@ function startTypingListener(chatId, otherUid) {
         } else {
             updateChatStatus(currentChatUser);
         }
-    }, (error) => {
-        console.warn("typing listener error:", error);
-    });
+    }, (error) => {});
 }
 
 function stopTypingListener() {
@@ -2555,9 +2828,7 @@ messageInput.addEventListener("input", () => {
     if (messageInput.value.trim().length > 0) {
         setMyTyping(true);
         if (myTypingTimeout) clearTimeout(myTypingTimeout);
-        myTypingTimeout = setTimeout(() => {
-            setMyTyping(false);
-        }, 2500);
+        myTypingTimeout = setTimeout(() => setMyTyping(false), 2500);
     } else {
         clearMyTyping();
     }
@@ -2635,6 +2906,8 @@ function openSettings() {
     settingsVerified.textContent = user.emailVerified ? "Verified" : "Not verified";
     settingsVerified.style.color = user.emailVerified ? "var(--success)" : "var(--warning)";
     clearMessage(settingsMessage);
+    clearMessage(settingsNotifMessage);
+    updateNotifUI();
     settingsModal.classList.remove("hidden");
 }
 
@@ -2668,7 +2941,6 @@ settingsSaveName.addEventListener("click", async () => {
         settingsDisplayName.textContent = newName;
         showMessage(settingsMessage, "Display name updated.", "success");
     } catch (error) {
-        console.error(error);
         showMessage(settingsMessage, "Could not update name.", "error");
     } finally {
         settingsSaveName.disabled = false;
@@ -2698,7 +2970,6 @@ settingsSignOut.addEventListener("click", async () => {
         await signOut(auth);
         closeSettings();
     } catch (error) {
-        console.error(error);
     } finally {
         settingsSignOut.disabled = false;
     }
@@ -2743,10 +3014,6 @@ async function routeUser(user) {
     startHeartbeat();
 }
 
-onAuthStateChanged(auth, (user) => {
-    routeUser(user);
-});
-
 
 // =========================================
 // ERROR MESSAGES
@@ -2773,6 +3040,16 @@ function getAuthErrorMessage(error) {
 // INIT
 // =========================================
 applyMode("signup");
+
+// Init messaging (after auth state starts)
+initMessaging().then(() => {
+    updateNotifUI();
+});
+
+// Also listen for auth changes to route user
+onAuthStateChanged(auth, (user) => {
+    routeUser(user);
+});
 
 </script>
 
