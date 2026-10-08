@@ -7,9 +7,6 @@
 <title>Messenger</title>
 
 <style>
-/* =========================================
-   GLOBAL
-========================================= */
 :root {
     --bg: #07111f;
     --bg-secondary: #0c1728;
@@ -103,7 +100,6 @@ body {
 }
 
 .field-group { margin-bottom: 16px; }
-
 input, textarea { font: inherit; }
 
 .text-input {
@@ -320,18 +316,19 @@ input, textarea { font: inherit; }
 .icon-button:hover { background: rgba(255,255,255,0.08); }
 
 /* TABS */
-.tabs-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.tabs-row { display: flex; gap: 6px; margin-bottom: 16px; }
 
 .tab-button {
     flex: 1;
-    padding: 11px 14px;
+    padding: 11px 8px;
     border: 1px solid var(--input-border);
     border-radius: 12px;
     background: rgba(255,255,255,0.03);
     color: var(--muted);
-    cursor: pointer; font-weight: 650; font-size: 13px;
+    cursor: pointer; font-weight: 650; font-size: 12px;
     transition: all 0.2s;
     position: relative;
+    white-space: nowrap;
 }
 
 .tab-button.active {
@@ -371,18 +368,18 @@ input, textarea { font: inherit; }
     border-radius: 15px;
     background: rgba(255,255,255,0.03);
     color: var(--text);
-    cursor: pointer; text-align: left;
+    text-align: left;
     transition: background 0.2s, transform 0.2s, border-color 0.2s;
     position: relative;
 }
 
-.user-card:hover {
+.user-card.clickable { cursor: pointer; }
+.user-card.clickable:hover {
     background: rgba(255,255,255,0.06);
     border-color: rgba(39, 211, 162, 0.3);
 }
 
-.user-card:active { transform: scale(0.99); }
-
+.user-card.clickable:active { transform: scale(0.99); }
 .user-card.unread {
     background: rgba(39, 211, 162, 0.05);
     border-color: rgba(39, 211, 162, 0.2);
@@ -399,7 +396,6 @@ input, textarea { font: inherit; }
     flex-shrink: 0;
 }
 
-/* Online dot */
 .online-dot {
     position: absolute;
     bottom: -2px; right: -2px;
@@ -450,6 +446,75 @@ input, textarea { font: inherit; }
     display: grid; place-items: center;
 }
 
+.user-card-action {
+    flex-shrink: 0;
+}
+
+.small-button {
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.small-button.primary {
+    background: linear-gradient(135deg, #52e9c0, #20bd91);
+    color: #04130e;
+}
+
+.small-button.primary:hover:not(:disabled) {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+.small-button.secondary {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    border: 1px solid var(--input-border);
+}
+
+.small-button.secondary:hover:not(:disabled) {
+    background: rgba(255,255,255,0.1);
+}
+
+.small-button.danger {
+    background: rgba(255, 107, 122, 0.12);
+    color: var(--danger);
+    border: 1px solid rgba(255, 107, 122, 0.3);
+}
+
+.small-button.danger:hover:not(:disabled) {
+    background: rgba(255, 107, 122, 0.2);
+}
+
+.small-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.status-pill {
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.status-pill.pending {
+    background: rgba(245, 185, 66, 0.12);
+    color: var(--warning);
+}
+
+.status-pill.sent {
+    background: rgba(148, 163, 184, 0.15);
+    color: var(--muted);
+}
+
 .empty-state {
     padding: 40px 20px;
     text-align: center;
@@ -458,6 +523,18 @@ input, textarea { font: inherit; }
 }
 
 .empty-state-icon { font-size: 34px; margin-bottom: 12px; opacity: 0.6; }
+
+.section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 700;
+    margin: 18px 0 10px;
+    padding: 0 4px;
+}
+
+.section-title:first-child { margin-top: 0; }
 
 /* CHAT VIEW */
 .chat-header {
@@ -485,7 +562,6 @@ input, textarea { font: inherit; }
     font-style: italic;
 }
 
-/* MESSAGES */
 .messages-area {
     display: flex; flex-direction: column; gap: 8px;
     height: 55vh; min-height: 340px; max-height: 600px;
@@ -565,7 +641,6 @@ input, textarea { font: inherit; }
 
 .messages-empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
 
-/* Typing bubble */
 .typing-row {
     align-self: flex-start;
     display: flex; gap: 4px;
@@ -591,7 +666,6 @@ input, textarea { font: inherit; }
     30% { transform: translateY(-5px); opacity: 1; }
 }
 
-/* CHAT INPUT */
 .chat-input-row {
     display: flex; gap: 8px; align-items: flex-end;
     padding: 10px;
@@ -698,7 +772,6 @@ input, textarea { font: inherit; }
     overflow-wrap: anywhere; text-align: right; font-size: 13px;
 }
 
-/* RESPONSIVE */
 @media (max-width: 520px) {
     .app-shell { align-items: flex-start; padding: 14px; padding-top: 24px; }
     .auth-card { padding: 25px 20px; border-radius: 21px; }
@@ -707,9 +780,9 @@ input, textarea { font: inherit; }
     .modal-card { padding: 22px 18px; }
     .messages-area { height: 60vh; }
     .message-row { max-width: 85%; }
+    .tab-button { font-size: 11px; padding: 10px 4px; }
 }
 
-/* LIGHT MODE */
 @media (prefers-color-scheme: light) {
     :root {
         --bg: #eef3f7;
@@ -786,7 +859,6 @@ input, textarea { font: inherit; }
         </div>
     </section>
 
-
     <!-- VERIFY VIEW -->
     <section id="verifyView" class="auth-view hidden">
         <div class="auth-card">
@@ -816,7 +888,6 @@ input, textarea { font: inherit; }
         </div>
     </section>
 
-
     <!-- FORGOT VIEW -->
     <section id="forgotView" class="auth-view hidden">
         <div class="auth-card">
@@ -840,7 +911,6 @@ input, textarea { font: inherit; }
             </form>
         </div>
     </section>
-
 
     <!-- RESET SENT VIEW -->
     <section id="resetSentView" class="auth-view hidden">
@@ -867,8 +937,7 @@ input, textarea { font: inherit; }
         </div>
     </section>
 
-
-    <!-- PROFILE SETUP VIEW -->
+    <!-- PROFILE SETUP -->
     <section id="profileSetupView" class="auth-view hidden">
         <div class="auth-card">
             <div class="status-icon primary">👤</div>
@@ -890,7 +959,6 @@ input, textarea { font: inherit; }
             </form>
         </div>
     </section>
-
 
     <!-- HOME VIEW -->
     <section id="homeView" class="wide-view hidden">
@@ -915,8 +983,12 @@ input, textarea { font: inherit; }
                     💬 Chats
                     <span id="chatsTotalBadge" class="tab-badge hidden">0</span>
                 </button>
+                <button id="tabRequests" class="tab-button" type="button">
+                    📬 Requests
+                    <span id="requestsTotalBadge" class="tab-badge hidden">0</span>
+                </button>
                 <button id="tabFind" class="tab-button" type="button">
-                    🔍 Find people
+                    🔍 Find
                 </button>
             </div>
 
@@ -924,10 +996,14 @@ input, textarea { font: inherit; }
                 <div id="chatsList" class="user-list"></div>
             </div>
 
+            <div id="requestsPanel" class="hidden">
+                <div id="requestsList" class="user-list"></div>
+            </div>
+
             <div id="findPanel" class="hidden">
                 <div class="search-row">
                     <input id="userSearchInput" class="text-input" type="email"
-                           inputmode="email" placeholder="Search by exact email..." autocomplete="off">
+                           inputmode="email" placeholder="Enter exact email to find user..." autocomplete="off">
                 </div>
                 <div id="homeMessage" class="message" role="alert"></div>
                 <div id="userList" class="user-list"></div>
@@ -935,7 +1011,6 @@ input, textarea { font: inherit; }
         </div>
 
     </section>
-
 
     <!-- CHAT VIEW -->
     <section id="chatView" class="chat-view-wrap hidden">
@@ -969,7 +1044,6 @@ input, textarea { font: inherit; }
     </section>
 
 </main>
-
 
 <!-- SETTINGS MODAL -->
 <div id="settingsModal" class="modal-overlay hidden">
@@ -1027,41 +1101,23 @@ input, textarea { font: inherit; }
     </div>
 </div>
 
-
 <script type="module">
 
 import { initializeApp } from
     "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 
 import {
-    getAuth,
-    setPersistence,
-    browserLocalPersistence,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    sendEmailVerification,
-    sendPasswordResetEmail,
+    getAuth, setPersistence, browserLocalPersistence,
+    createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    signOut, sendEmailVerification, sendPasswordResetEmail,
     onAuthStateChanged
 } from
     "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 import {
-    getFirestore,
-    doc,
-    getDoc,
-    setDoc,
-    updateDoc,
-    collection,
-    query,
-    where,
-    orderBy,
-    limit,
-    getDocs,
-    addDoc,
-    onSnapshot,
-    serverTimestamp,
-    Timestamp
+    getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc,
+    collection, query, where, orderBy, limit, getDocs, addDoc,
+    onSnapshot, serverTimestamp
 } from
     "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
@@ -1092,6 +1148,7 @@ await setPersistence(auth, browserLocalPersistence);
 const MIN_PASSWORD_LENGTH = 8;
 const USERS_COLLECTION = "users";
 const CHATS_COLLECTION = "chats";
+const REQUESTS_COLLECTION = "requests";
 const MESSAGES_SUBCOLLECTION = "messages";
 const TYPING_SUBCOLLECTION = "typing";
 
@@ -1105,15 +1162,19 @@ let currentChatUser = null;
 let currentChatId = null;
 let messagesUnsubscribe = null;
 let chatsUnsubscribe = null;
+let requestsUnsubscribe = null;
 let typingUnsubscribe = null;
 let activeTab = "chats";
 
-// Typing state
 let myTypingTimeout = null;
 let lastTypingSent = false;
-
-// Read receipts
 let markReadTimeout = null;
+
+// Cache of accepted chat partners (Set of UIDs)
+let acceptedPartners = new Set();
+// Cache of pending requests (from/to)
+let outgoingPending = new Set();  // UIDs I sent request to (still pending)
+let incomingPending = new Set();  // UIDs who sent me request (still pending)
 
 
 // =========================================
@@ -1170,11 +1231,15 @@ const refreshButton       = document.getElementById("refreshButton");
 const settingsButton      = document.getElementById("settingsButton");
 
 const tabChats            = document.getElementById("tabChats");
+const tabRequests         = document.getElementById("tabRequests");
 const tabFind             = document.getElementById("tabFind");
 const chatsPanel          = document.getElementById("chatsPanel");
+const requestsPanel       = document.getElementById("requestsPanel");
 const findPanel           = document.getElementById("findPanel");
 const chatsList           = document.getElementById("chatsList");
+const requestsList        = document.getElementById("requestsList");
 const chatsTotalBadge     = document.getElementById("chatsTotalBadge");
+const requestsTotalBadge  = document.getElementById("requestsTotalBadge");
 const userSearchInput     = document.getElementById("userSearchInput");
 const homeMessage         = document.getElementById("homeMessage");
 const userList            = document.getElementById("userList");
@@ -1266,7 +1331,6 @@ function formatTime(ts) {
 
 function isUserOnline(profile) {
     if (!profile || !profile.online) return false;
-    // Consider online if lastSeen within last 60 seconds
     if (profile.lastSeen?.toMillis) {
         const diff = Date.now() - profile.lastSeen.toMillis();
         return diff < 60000;
@@ -1278,10 +1342,7 @@ function formatLastSeen(profile) {
     if (!profile) return "Offline";
     if (isUserOnline(profile)) return "Online";
 
-    const lastSeen = profile.lastSeen?.toDate
-        ? profile.lastSeen.toDate()
-        : null;
-
+    const lastSeen = profile.lastSeen?.toDate ? profile.lastSeen.toDate() : null;
     if (!lastSeen) return "Offline";
 
     const now = new Date();
@@ -1296,7 +1357,7 @@ function formatLastSeen(profile) {
 
 
 // =========================================
-// PRESENCE (Online / Offline)
+// PRESENCE
 // =========================================
 async function setOnlineStatus(isOnline) {
     const user = auth.currentUser;
@@ -1311,7 +1372,6 @@ async function setOnlineStatus(isOnline) {
     }
 }
 
-// Heartbeat — har 30 sec online mark karo
 let heartbeatInterval = null;
 
 function startHeartbeat() {
@@ -1329,7 +1389,6 @@ function stopHeartbeat() {
 
 window.addEventListener("beforeunload", () => {
     if (auth.currentUser) {
-        // Try to set offline (may not complete, that's fine)
         updateDoc(doc(db, USERS_COLLECTION, auth.currentUser.uid), {
             online: false,
             lastSeen: serverTimestamp()
@@ -1641,102 +1700,460 @@ async function loadHome() {
     headerEmail.textContent = currentUserProfile.email;
 
     showView(homeView);
+    await refreshRelationships();
     switchTab("chats");
+}
+
+// Load accepted partners + pending requests into caches
+async function refreshRelationships() {
+    const uid = auth.currentUser.uid;
+    acceptedPartners = new Set();
+    outgoingPending = new Set();
+    incomingPending = new Set();
+
+    try {
+        // Chats = accepted partners
+        const chatsRef = collection(db, CHATS_COLLECTION);
+        const qChats = query(chatsRef, where("participants", "array-contains", uid));
+        const chatsSnap = await getDocs(qChats);
+        chatsSnap.forEach(d => {
+            const data = d.data();
+            data.participants.forEach(p => {
+                if (p !== uid) acceptedPartners.add(p);
+            });
+        });
+
+        // Requests where I'm sender
+        const reqRef1 = collection(db, REQUESTS_COLLECTION);
+        const q1 = query(reqRef1, where("fromUid", "==", uid), where("status", "==", "pending"));
+        const snap1 = await getDocs(q1);
+        snap1.forEach(d => {
+            const data = d.data();
+            outgoingPending.add(data.toUid);
+        });
+
+        // Requests where I'm receiver
+        const q2 = query(reqRef1, where("toUid", "==", uid), where("status", "==", "pending"));
+        const snap2 = await getDocs(q2);
+        snap2.forEach(d => {
+            const data = d.data();
+            incomingPending.add(data.fromUid);
+        });
+
+    } catch (error) {
+        console.warn("refreshRelationships error:", error);
+    }
 }
 
 function switchTab(tab) {
     activeTab = tab;
+
+    [tabChats, tabRequests, tabFind].forEach(t => t.classList.remove("active"));
+    [chatsPanel, requestsPanel, findPanel].forEach(p => p.classList.add("hidden"));
+
     if (tab === "chats") {
         tabChats.classList.add("active");
-        tabFind.classList.remove("active");
         chatsPanel.classList.remove("hidden");
-        findPanel.classList.add("hidden");
         startChatsListener();
+        stopRequestsListener();
+    } else if (tab === "requests") {
+        tabRequests.classList.add("active");
+        requestsPanel.classList.remove("hidden");
+        startRequestsListener();
+        stopChatsListener();
     } else {
         tabFind.classList.add("active");
-        tabChats.classList.remove("active");
         findPanel.classList.remove("hidden");
-        chatsPanel.classList.add("hidden");
         stopChatsListener();
+        stopRequestsListener();
         userSearchInput.value = "";
         clearMessage(homeMessage);
-        searchUsers("");
+        userList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                Type the exact email address of the person you want to connect with.
+            </div>`;
         setTimeout(() => userSearchInput.focus(), 100);
     }
 }
 
 tabChats.addEventListener("click", () => switchTab("chats"));
+tabRequests.addEventListener("click", () => switchTab("requests"));
 tabFind.addEventListener("click", () => switchTab("find"));
 
 
 // =========================================
-// FIND PEOPLE
+// FIND PEOPLE — EXACT EMAIL SEARCH ONLY
 // =========================================
-async function searchUsers(searchTerm) {
+async function searchUserByExactEmail(email) {
     userList.innerHTML = "";
+
+    if (!email || !validateEmail(email)) {
+        userList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                Type a valid email address to search.
+            </div>`;
+        return;
+    }
+
     try {
         const usersRef = collection(db, USERS_COLLECTION);
-        let q;
-        if (searchTerm) {
-            q = query(usersRef, where("email", "==", searchTerm.toLowerCase()), limit(20));
-        } else {
-            q = query(usersRef, limit(20));
-        }
+        const q = query(usersRef, where("email", "==", email.toLowerCase()), limit(1));
         const snap = await getDocs(q);
-        const users = [];
-        snap.forEach(d => {
-            const data = d.data();
-            if (data.uid !== auth.currentUser.uid) users.push(data);
-        });
 
-        if (users.length === 0) {
+        if (snap.empty) {
             userList.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon">🔍</div>
-                    ${searchTerm
-                        ? "No user found with that email."
-                        : "No other users yet. Invite a friend to sign up!"}
+                    <div class="empty-state-icon">😕</div>
+                    No user found with this email.<br>
+                    Make sure they have signed up.
                 </div>`;
             return;
         }
 
-        users.forEach(u => {
-            const online = isUserOnline(u);
-            const card = document.createElement("button");
-            card.className = "user-card";
-            card.type = "button";
-            card.innerHTML = `
-                <div class="user-avatar">
-                    ${escapeHtml(getInitials(u.displayName))}
-                    ${online ? '<span class="online-dot"></span>' : ""}
-                </div>
-                <div class="user-card-info">
-                    <h4>${escapeHtml(u.displayName)}</h4>
-                    <p>${escapeHtml(u.email)}</p>
-                </div>
-                <div class="user-card-arrow">›</div>
-            `;
-            card.addEventListener("click", () => openChatWith(u));
-            userList.appendChild(card);
-        });
+        const found = snap.docs[0].data();
+
+        if (found.uid === auth.currentUser.uid) {
+            userList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🙂</div>
+                    That's your own email.
+                </div>`;
+            return;
+        }
+
+        renderFoundUser(found);
     } catch (error) {
-        console.error("searchUsers error:", error);
-        showMessage(homeMessage, "Could not load users. Check Firestore rules.", "error");
+        console.error("searchUserByExactEmail error:", error);
+        showMessage(homeMessage, "Could not search. Check Firestore rules.", "error");
     }
+}
+
+function renderFoundUser(user) {
+    const uid = auth.currentUser.uid;
+
+    const isAccepted = acceptedPartners.has(user.uid);
+    const isOutgoing = outgoingPending.has(user.uid);
+    const isIncoming = incomingPending.has(user.uid);
+
+    const online = isUserOnline(user);
+
+    const card = document.createElement("div");
+    card.className = "user-card";
+
+    let actionHTML = "";
+
+    if (isAccepted) {
+        actionHTML = `
+            <div class="user-card-action">
+                <button class="small-button primary" data-action="chat">Chat</button>
+            </div>`;
+    } else if (isOutgoing) {
+        actionHTML = `
+            <div class="user-card-action">
+                <span class="status-pill sent">Request Sent</span>
+            </div>`;
+    } else if (isIncoming) {
+        actionHTML = `
+            <div class="user-card-action">
+                <button class="small-button primary" data-action="accept">Accept</button>
+            </div>`;
+    } else {
+        actionHTML = `
+            <div class="user-card-action">
+                <button class="small-button primary" data-action="request">Send Request</button>
+            </div>`;
+    }
+
+    card.innerHTML = `
+        <div class="user-avatar">
+            ${escapeHtml(getInitials(user.displayName))}
+            ${online ? '<span class="online-dot"></span>' : ""}
+        </div>
+        <div class="user-card-info">
+            <h4>${escapeHtml(user.displayName)}</h4>
+            <p>${escapeHtml(user.email)}</p>
+        </div>
+        ${actionHTML}
+    `;
+
+    // Attach action
+    const actionBtn = card.querySelector("button[data-action]");
+    if (actionBtn) {
+        const action = actionBtn.dataset.action;
+        if (action === "chat") {
+            actionBtn.addEventListener("click", () => openChatWith(user));
+        } else if (action === "accept") {
+            actionBtn.addEventListener("click", () => acceptRequestFrom(user, actionBtn));
+        } else if (action === "request") {
+            actionBtn.addEventListener("click", () => sendRequest(user, actionBtn));
+        }
+    }
+
+    userList.appendChild(card);
 }
 
 userSearchInput.addEventListener("input", (e) => {
     clearTimeout(window.__searchTimeout);
     const value = e.target.value.trim().toLowerCase();
-    window.__searchTimeout = setTimeout(() => searchUsers(value), 400);
+    clearMessage(homeMessage);
+    window.__searchTimeout = setTimeout(() => {
+        if (value.length >= 5) {
+            searchUserByExactEmail(value);
+        } else if (value.length === 0) {
+            userList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔍</div>
+                    Type the exact email address of the person you want to connect with.
+                </div>`;
+        }
+    }, 500);
 });
 
-refreshButton.addEventListener("click", () => {
-    if (activeTab === "find") {
-        userSearchInput.value = "";
-        searchUsers("");
+
+// =========================================
+// REQUESTS (send / accept / reject / cancel)
+// =========================================
+async function sendRequest(toUser, buttonEl) {
+    const uid = auth.currentUser.uid;
+
+    if (buttonEl) { buttonEl.disabled = true; buttonEl.textContent = "Sending..."; }
+
+    try {
+        const reqRef = collection(db, REQUESTS_COLLECTION);
+        await addDoc(reqRef, {
+            fromUid: uid,
+            fromEmail: currentUserProfile.email,
+            fromName: currentUserProfile.displayName,
+            toUid: toUser.uid,
+            toEmail: toUser.email,
+            toName: toUser.displayName,
+            status: "pending",
+            createdAt: serverTimestamp()
+        });
+
+        outgoingPending.add(toUser.uid);
+        await refreshRelationships();
+
+        if (buttonEl) {
+            buttonEl.outerHTML = `<span class="status-pill sent">Request Sent</span>`;
+        }
+    } catch (error) {
+        console.error("sendRequest error:", error);
+        if (buttonEl) {
+            buttonEl.disabled = false;
+            buttonEl.textContent = "Send Request";
+        }
+        alert("Could not send request. Try again.");
     }
-});
+}
+
+async function acceptRequestFrom(fromUser, buttonEl) {
+    const uid = auth.currentUser.uid;
+
+    if (buttonEl) { buttonEl.disabled = true; buttonEl.textContent = "Accepting..."; }
+
+    try {
+        // Find the pending request doc
+        const reqRef = collection(db, REQUESTS_COLLECTION);
+        const q = query(reqRef,
+            where("fromUid", "==", fromUser.uid),
+            where("toUid", "==", uid),
+            where("status", "==", "pending"),
+            limit(1)
+        );
+        const snap = await getDocs(q);
+
+        if (snap.empty) throw new Error("Request not found");
+
+        const docRef = snap.docs[0].ref;
+        await updateDoc(docRef, {
+            status: "accepted",
+            respondedAt: serverTimestamp()
+        });
+
+        // Create the chat document
+        await ensureChatDocument(uid, fromUser.uid);
+
+        await refreshRelationships();
+
+        if (buttonEl) {
+            buttonEl.outerHTML = `<button class="small-button primary" data-action="chat">Chat</button>`;
+            // Re-attach chat
+            const newBtn = document.querySelector(`button[data-action="chat"]`);
+            if (newBtn) newBtn.addEventListener("click", () => openChatWith(fromUser));
+        }
+    } catch (error) {
+        console.error("acceptRequestFrom error:", error);
+        if (buttonEl) {
+            buttonEl.disabled = false;
+            buttonEl.textContent = "Accept";
+        }
+        alert("Could not accept request. Try again.");
+    }
+}
+
+async function rejectRequest(requestDoc, buttonEl) {
+    if (buttonEl) { buttonEl.disabled = true; }
+
+    try {
+        await updateDoc(requestDoc.ref, {
+            status: "rejected",
+            respondedAt: serverTimestamp()
+        });
+    } catch (error) {
+        console.error("rejectRequest error:", error);
+        if (buttonEl) buttonEl.disabled = false;
+        alert("Could not reject request.");
+    }
+}
+
+async function cancelRequest(requestDoc, buttonEl) {
+    if (buttonEl) { buttonEl.disabled = true; }
+
+    try {
+        await deleteDoc(requestDoc.ref);
+        await refreshRelationships();
+    } catch (error) {
+        console.error("cancelRequest error:", error);
+        if (buttonEl) buttonEl.disabled = false;
+        alert("Could not cancel request.");
+    }
+}
+
+
+// =========================================
+// REQUESTS LISTENER
+// =========================================
+function startRequestsListener() {
+    stopRequestsListener();
+
+    const uid = auth.currentUser.uid;
+    const reqRef = collection(db, REQUESTS_COLLECTION);
+
+    // Incoming pending
+    const qIn = query(reqRef,
+        where("toUid", "==", uid),
+        where("status", "==", "pending")
+    );
+
+    requestsUnsubscribe = onSnapshot(qIn, async (snapIn) => {
+        const incoming = [];
+        snapIn.forEach(d => incoming.push({ id: d.id, ref: d.ref, ...d.data() }));
+
+        // Also load outgoing pending separately
+        let outgoing = [];
+        try {
+            const qOut = query(reqRef,
+                where("fromUid", "==", uid),
+                where("status", "==", "pending")
+            );
+            const snapOut = await getDocs(qOut);
+            snapOut.forEach(d => outgoing.push({ id: d.id, ref: d.ref, ...d.data() }));
+        } catch (e) {
+            console.warn("outgoing fetch error:", e);
+        }
+
+        renderRequests(incoming, outgoing);
+    }, (error) => {
+        console.error("requests listener error:", error);
+        requestsList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">⚠️</div>
+                Could not load requests.
+            </div>`;
+    });
+}
+
+function stopRequestsListener() {
+    if (requestsUnsubscribe) {
+        requestsUnsubscribe();
+        requestsUnsubscribe = null;
+    }
+}
+
+function renderRequests(incoming, outgoing) {
+    requestsList.innerHTML = "";
+
+    const incomingBadgeCount = incoming.length;
+    if (incomingBadgeCount > 0) {
+        requestsTotalBadge.textContent = incomingBadgeCount > 99 ? "99+" : incomingBadgeCount;
+        requestsTotalBadge.classList.remove("hidden");
+    } else {
+        requestsTotalBadge.classList.add("hidden");
+    }
+
+    if (incoming.length === 0 && outgoing.length === 0) {
+        requestsList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📬</div>
+                No requests yet.<br>
+                Use <strong>Find</strong> tab to search for users.
+            </div>`;
+        return;
+    }
+
+    if (incoming.length > 0) {
+        const title = document.createElement("div");
+        title.className = "section-title";
+        title.textContent = `Incoming (${incoming.length})`;
+        requestsList.appendChild(title);
+
+        incoming.forEach(req => {
+            const card = document.createElement("div");
+            card.className = "user-card";
+            card.innerHTML = `
+                <div class="user-avatar">${escapeHtml(getInitials(req.fromName))}</div>
+                <div class="user-card-info">
+                    <h4>${escapeHtml(req.fromName)}</h4>
+                    <p>${escapeHtml(req.fromEmail)}</p>
+                </div>
+                <div class="user-card-action" style="display: flex; gap: 6px;">
+                    <button class="small-button primary" data-action="accept">Accept</button>
+                    <button class="small-button danger" data-action="reject">Reject</button>
+                </div>
+            `;
+            const acceptBtn = card.querySelector('[data-action="accept"]');
+            const rejectBtn = card.querySelector('[data-action="reject"]');
+
+            acceptBtn.addEventListener("click", () => acceptRequestFrom({
+                uid: req.fromUid,
+                email: req.fromEmail,
+                displayName: req.fromName
+            }, acceptBtn));
+
+            rejectBtn.addEventListener("click", () => rejectRequest(req, rejectBtn));
+
+            requestsList.appendChild(card);
+        });
+    }
+
+    if (outgoing.length > 0) {
+        const title = document.createElement("div");
+        title.className = "section-title";
+        title.textContent = `Sent (${outgoing.length})`;
+        requestsList.appendChild(title);
+
+        outgoing.forEach(req => {
+            const card = document.createElement("div");
+            card.className = "user-card";
+            card.innerHTML = `
+                <div class="user-avatar">${escapeHtml(getInitials(req.toName))}</div>
+                <div class="user-card-info">
+                    <h4>${escapeHtml(req.toName)}</h4>
+                    <p>${escapeHtml(req.toEmail)}</p>
+                </div>
+                <div class="user-card-action">
+                    <button class="small-button secondary" data-action="cancel">Cancel</button>
+                </div>
+            `;
+            const cancelBtn = card.querySelector('[data-action="cancel"]');
+            cancelBtn.addEventListener("click", () => cancelRequest(req, cancelBtn));
+            requestsList.appendChild(card);
+        });
+    }
+}
 
 
 // =========================================
@@ -1764,7 +2181,7 @@ function startChatsListener() {
                 <div class="empty-state">
                     <div class="empty-state-icon">💬</div>
                     No chats yet.<br>
-                    Switch to <strong>Find people</strong> tab to start one.
+                    Switch to <strong>Find</strong> tab and send a request first.
                 </div>`;
             updateTotalUnreadBadge(0);
             return;
@@ -1778,13 +2195,12 @@ function startChatsListener() {
             const otherProfile = await getUserProfile(otherUid);
             if (!otherProfile) continue;
 
-            // Unread count for me
             const unreadForMe = (chat.unread && chat.unread[uid]) || 0;
             totalUnread += unreadForMe;
 
             const online = isUserOnline(otherProfile);
             const card = document.createElement("button");
-            card.className = "user-card" + (unreadForMe > 0 ? " unread" : "");
+            card.className = "user-card clickable" + (unreadForMe > 0 ? " unread" : "");
             card.type = "button";
 
             let preview = "No messages yet";
@@ -1818,8 +2234,7 @@ function startChatsListener() {
         chatsList.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">⚠️</div>
-                Could not load chats.<br>
-                Check Firestore rules.
+                Could not load chats.
             </div>`;
     });
 }
@@ -1869,11 +2284,17 @@ async function ensureChatDocument(uidA, uidB) {
 
 async function openChatWith(otherUser, existingChatId) {
     const uid = auth.currentUser.uid;
+
+    // Safety check — must be accepted partner
+    if (!acceptedPartners.has(otherUser.uid) && !existingChatId) {
+        alert("You can only chat with accepted contacts.");
+        return;
+    }
+
     currentChatUser = otherUser;
 
     chatAvatar.textContent = getInitials(otherUser.displayName);
     chatName.textContent = otherUser.displayName;
-
     updateChatStatus(otherUser);
 
     showView(chatView);
@@ -1890,15 +2311,13 @@ async function openChatWith(otherUser, existingChatId) {
         messageInput.value = "";
         messageInput.style.height = "auto";
         setTimeout(() => messageInput.focus(), 200);
-
-        // Mark as read
         await markChatAsRead(currentChatId);
     } catch (error) {
         console.error("openChat error:", error);
         messagesArea.innerHTML = `
             <div class="messages-empty">
                 <div class="messages-empty-icon">⚠️</div>
-                <div>Could not open chat.<br>Check Firestore rules.</div>
+                <div>Could not open chat.</div>
             </div>`;
     }
 }
@@ -1939,22 +2358,19 @@ function startMessagesListener(chatId) {
             scrollToBottom(false);
         }
 
-        // If new messages from other user arrived while chat is open, mark as read
         const otherUid = currentChatUser?.uid;
         if (otherUid) {
             const hasUnreadFromOther = msgs.some(m =>
                 m.senderId === otherUid && (!m.readBy || !m.readBy[myUid()])
             );
-            if (hasUnreadFromOther) {
-                scheduleMarkRead();
-            }
+            if (hasUnreadFromOther) scheduleMarkRead();
         }
     }, (error) => {
         console.error("messages listener error:", error);
         messagesArea.innerHTML = `
             <div class="messages-empty">
                 <div class="messages-empty-icon">⚠️</div>
-                <div>Could not load messages.<br>Check Firestore rules.</div>
+                <div>Could not load messages.</div>
             </div>`;
     });
 }
@@ -1983,7 +2399,6 @@ async function markChatAsRead(chatId) {
 
         const data = snap.data();
         const currentUnread = (data.unread && data.unread[uid]) || 0;
-
         if (currentUnread === 0) return;
 
         await updateDoc(chatRef, {
@@ -2066,7 +2481,7 @@ chatBackButton.addEventListener("click", () => {
     currentChatUser = null;
     currentChatId = null;
     showView(homeView);
-    switchTab("chats");
+    refreshRelationships().then(() => switchTab("chats"));
 });
 
 
@@ -2114,9 +2529,7 @@ async function setMyTyping(isTyping) {
             typing: isTyping,
             updatedAt: serverTimestamp()
         });
-    } catch (error) {
-        // Silently ignore — typing is non-critical
-    }
+    } catch (error) {}
 }
 
 function clearMyTyping() {
@@ -2139,7 +2552,6 @@ messageInput.addEventListener("input", () => {
     messageInput.style.height = "auto";
     messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + "px";
 
-    // Typing indicator
     if (messageInput.value.trim().length > 0) {
         setMyTyping(true);
         if (myTypingTimeout) clearTimeout(myTypingTimeout);
@@ -2181,7 +2593,6 @@ messageForm.addEventListener("submit", async (e) => {
     loader.classList.remove("hidden");
 
     try {
-        // Add message with readBy = { me: true }
         await addDoc(msgsRef, {
             senderId: uid,
             text,
@@ -2189,7 +2600,6 @@ messageForm.addEventListener("submit", async (e) => {
             readBy: { [uid]: true }
         });
 
-        // Update chat metadata + unread for recipient
         const chatSnap = await getDoc(chatRef);
         const currentUnread = (chatSnap.data()?.unread?.[otherUid]) || 0;
 
@@ -2202,7 +2612,7 @@ messageForm.addEventListener("submit", async (e) => {
     } catch (error) {
         console.error("Send message error:", error);
         messageInput.value = text;
-        alert("Could not send message. Check your connection.");
+        alert("Could not send message.");
     } finally {
         sendButton.disabled = false;
         sendIcon.classList.remove("hidden");
@@ -2302,6 +2712,7 @@ async function routeUser(user) {
     if (!user) {
         currentUserProfile = null;
         stopChatsListener();
+        stopRequestsListener();
         stopMessagesListener();
         stopTypingListener();
         stopHeartbeat();
