@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="Secure real-time messaging application">
+<title>Messenger - Secure Sign In</title>
+
+<style>
+/* =========================================
+   GLOBAL
+========================================= */
+:root {
+    --bg: #07111f;
+    --bg-secondary: #0c1728;
+    --card: rgba(16, 29, 48, 0.88);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --primary: #27d3a2;
+    --primary-dark: #1aaa83;
+    --danger: #ff6b7a;
+    --success: #42d392;
+    --input: rgba(255, 255, 255, 0.055);
+    --input-border: rgba(255, 255, 255, 0.11);
+    --shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+    --radius: 24px;
+}
+
+* { box-sizing: border-box; }
+html { min-height: 100%; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at top left, rgba(39, 211, 162, 0.12), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(60, 130, 246, 0.10), transparent 30%),
+        var(--bg);
+}
+
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.auth-view { width: 100%; max-width: 460px; }
+.hidden { display: none !important; }
+
+.auth-card {
+    width: 100%;
+    padding: 34px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    background:
+        linear-gradient(145deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015)),
+        var(--card);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    animation: cardIn 0.45s ease;
+}
+
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 42px;
+}
+
+.brand-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    color: #06131a;
+    background: linear-gradient(135deg, #4ce7bd, #20bd91);
+    font-size: 24px;
+    box-shadow: 0 10px 30px rgba(39, 211, 162, 0.25);
+}
+
+.brand h1 { margin: 0; font-size: 18px; font-weight: 750; }
+.brand p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+
+.auth-heading { margin-bottom: 26px; }
+.auth-heading.center { text-align: center; }
+.auth-heading h2 { margin: 0 0 8px; font-size: 28px; line-height: 1.15; }
+.auth-heading p { margin: 0; color: var(--muted); line-height: 1.6; }
+
+.field-label {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 13px;
+    font-weight: 650;
+    color: #dbe5ef;
+}
+
+.center-label { text-align: center; }
+
+.phone-row { display: flex; gap: 9px; }
+
+.country-selector {
+    min-width: 108px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 1px solid var(--input-border);
+    border-radius: 14px;
+    background: var(--input);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 12px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.country-selector:hover { background: rgba(255,255,255,0.08); }
+.country-selector:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.chevron { color: var(--muted); }
+
+input { font: inherit; }
+
+#phoneNumber {
+    width: 100%;
+    min-width: 0;
+    padding: 15px 16px;
+    border: 1px solid var(--input-border);
+    border-radius: 14px;
+    background: var(--input);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+#phoneNumber::placeholder { color: #64748b; }
+
+#phoneNumber:focus {
+    border-color: rgba(39, 211, 162, 0.7);
+    box-shadow: 0 0 0 4px rgba(39, 211, 162, 0.08);
+    background: rgba(255,255,255,0.07);
+}
+
+.country-dropdown {
+    position: relative;
+    margin-top: 8px;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    background: #0c1829;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+    z-index: 50;
+}
+
+.country-search-wrapper {
+    padding: 10px;
+    border-bottom: 1px solid var(--card-border);
+}
+
+#countrySearch {
+    width: 100%;
+    padding: 12px 13px;
+    border: 1px solid var(--input-border);
+    border-radius: 11px;
+    background: var(--input);
+    color: var(--text);
+    outline: none;
+}
+
+.country-list { max-height: 270px; overflow-y: auto; }
+
+.country-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+}
+
+.country-item:hover,
+.country-item.active { background: rgba(255,255,255,0.07); }
+
+.country-flag { width: 28px; font-size: 21px; }
+.country-name { flex: 1; font-size: 14px; }
+.country-code { color: var(--muted); font-size: 13px; }
+
+.phone-preview {
+    min-height: 22px;
+    margin-top: 9px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.primary-button {
+    position: relative;
+    width: 100%;
+    margin-top: 16px;
+    padding: 15px 18px;
+    border: 0;
+    border-radius: 14px;
+    color: #04130e;
+    background: linear-gradient(135deg, #52e9c0, #20bd91);
+    font-size: 15px;
+    font-weight: 750;
+    cursor: pointer;
+    box-shadow: 0 12px 28px rgba(39, 211, 162, 0.18);
+    transition: transform 0.18s, filter 0.18s, opacity 0.18s;
+}
+
+.primary-button:hover:not(:disabled) { filter: brightness(1.05); transform: translateY(-1px); }
+.primary-button:active:not(:disabled) { transform: translateY(0); }
+.primary-button:disabled { cursor: not-allowed; opacity: 0.6; }
+
+.secondary-button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 14px;
+    border: 1px solid var(--input-border);
+    border-radius: 13px;
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 650;
+    transition: background 0.2s;
+}
+
+.secondary-button:hover { background: rgba(255,255,255,0.08); }
+
+.text-button {
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.text-button:disabled { color: #64748b; cursor: not-allowed; }
+
+.button-loader {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    border: 2px solid rgba(0,0,0,0.25);
+    border-top-color: #03130d;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.message { min-height: 22px; margin-top: 10px; font-size: 13px; line-height: 1.5; }
+.message.error { color: var(--danger); }
+.message.success { color: var(--success); }
+
+.legal-text {
+    margin: 22px 0 0;
+    color: #64748b;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.back-button:hover { color: var(--text); }
+
+.otp-icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 20px;
+    border-radius: 18px;
+    background: rgba(39, 211, 162, 0.1);
+    color: var(--primary);
+    font-size: 25px;
+}
+
+#maskedPhone {
+    display: block;
+    margin-top: 8px;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.otp-input {
+    width: 100%;
+    padding: 17px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 14px;
+    background: var(--input);
+    color: var(--text);
+    outline: none;
+    text-align: center;
+    letter-spacing: 9px;
+    font-size: 23px;
+    font-weight: 700;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.otp-input:focus {
+    border-color: rgba(39, 211, 162, 0.7);
+    box-shadow: 0 0 0 4px rgba(39, 211, 162, 0.08);
+}
+
+.resend-section { margin-top: 22px; text-align: center; font-size: 13px; }
+.resend-section p { margin: 0 0 10px; color: var(--muted); }
+
+#recaptcha-container { margin-top: 10px; min-height: 0; overflow: hidden; }
+
+.home-view { width: 100%; max-width: 500px; }
+
+.home-card {
+    padding: 36px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    text-align: center;
+    animation: cardIn 0.45s ease;
+}
+
+.home-icon {
+    width: 68px;
+    height: 68px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 22px;
+    border-radius: 22px;
+    background: rgba(66, 211, 146, 0.12);
+    color: var(--success);
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.home-card h1 { margin: 0 0 9px; font-size: 27px; }
+.home-card > p { margin: 0; color: var(--muted); line-height: 1.6; }
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 22px;
+    padding: 14px;
+    border: 1px solid var(--card-border);
+    border-radius: 13px;
+    background: rgba(255,255,255,0.035);
+    text-align: left;
+}
+
+.user-info-label {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.user-info code,
+.user-info span:last-child {
+    overflow-wrap: anywhere;
+    color: var(--text);
+    font-size: 13px;
+}
+
+@media (max-width: 520px) {
+    .app-shell { align-items: flex-start; padding: 14px; padding-top: 24px; }
+    .auth-card { padding: 25px 20px; border-radius: 21px; }
+    .brand { margin-bottom: 32px; }
+    .auth-heading h2 { font-size: 25px; }
+    .country-selector { min-width: 94px; }
+    .otp-input { letter-spacing: 7px; }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg: #eef3f7;
+        --bg-secondary: #ffffff;
+        --card: rgba(255,255,255,0.92);
+        --card-border: rgba(15,23,42,0.08);
+        --text: #0f172a;
+        --muted: #64748b;
+        --input: rgba(15,23,42,0.035);
+        --input-border: rgba(15,23,42,0.10);
+    }
+    .country-dropdown { background: #ffffff; }
+    .country-item:hover,
+    .country-item.active { background: rgba(15,23,42,0.05); }
+}
+</style>
+</head>
+
+<body>
+
+<main class="app-shell">
+
+    <!-- =========================================
+         LOGIN VIEW
+    ========================================== -->
+    <section id="loginView" class="auth-view">
+        <div class="auth-card">
+
+            <div class="brand">
+                <div class="brand-icon"><span>✦</span></div>
+                <div>
+                    <h1>Messenger</h1>
+                    <p>Private. Simple. Connected.</p>
+                </div>
+            </div>
+
+            <div class="auth-heading">
+                <h2>Welcome back</h2>
+                <p>Enter your phone number to securely continue.</p>
+            </div>
+
+            <form id="phoneForm" novalidate>
+
+                <label class="field-label" for="phoneNumber">Phone number</label>
+
+                <div class="phone-row">
+                    <button type="button" id="countrySelector" class="country-selector"
+                            aria-haspopup="listbox" aria-expanded="false">
+                        <span id="selectedFlag">🇵🇰</span>
+                        <span id="selectedCode">+92</span>
+                        <span class="chevron">⌄</span>
+                    </button>
+
+                    <input id="phoneNumber" type="tel" inputmode="numeric"
+                           autocomplete="tel-national" placeholder="300 1234567"
+                           maxlength="15" aria-label="Phone number">
+                </div>
+
+                <div id="countryDropdown" class="country-dropdown hidden" role="listbox">
+                    <div class="country-search-wrapper">
+                        <input id="countrySearch" type="search"
+                               placeholder="Search country..." autocomplete="off">
+                    </div>
+                    <div id="countryList" class="country-list"></div>
+                </div>
+
+                <div id="phonePreview" class="phone-preview" aria-live="polite"></div>
+                <div id="loginMessage" class="message" role="alert"></div>
+
+                <div id="recaptcha-container"></div>
+
+                <button id="continueButton" type="submit" class="primary-button">
+                    <span class="button-text">Continue</span>
+                    <span class="button-loader hidden" aria-hidden="true"></span>
+                </button>
+
+            </form>
+
+            <p class="legal-text">
+                By continuing, you agree to use this service responsibly.
+                SMS verification may be required.
+            </p>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================
+         OTP VIEW
+    ========================================== -->
+    <section id="otpView" class="auth-view hidden">
+        <div class="auth-card">
+
+            <button id="backButton" type="button" class="back-button">
+                ← <span>Change number</span>
+            </button>
+
+            <div class="otp-icon"><span>✉</span></div>
+
+            <div class="auth-heading center">
+                <h2>Enter verification code</h2>
+                <p>We sent a 6-digit verification code to</p>
+                <strong id="maskedPhone">+92 ••••••••••</strong>
+            </div>
+
+            <form id="otpForm" novalidate>
+
+                <label class="field-label center-label" for="otpInput">
+                    Verification code
+                </label>
+
+                <input id="otpInput" class="otp-input" type="text"
+                       inputmode="numeric" autocomplete="one-time-code"
+                       maxlength="6" pattern="[0-9]{6}"
+                       placeholder="000000" aria-label="6 digit verification code">
+
+                <div id="otpMessage" class="message" role="alert"></div>
+
+                <button id="verifyButton" type="submit" class="primary-button">
+                    <span class="button-text">Verify & Continue</span>
+                    <span class="button-loader hidden" aria-hidden="true"></span>
+                </button>
+
+            </form>
+
+            <div class="resend-section">
+                <p id="resendTimer">Resend code in <strong>60s</strong></p>
+                <button id="resendButton" type="button" class="text-button" disabled>
+                    Resend OTP
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================
+         AUTHENTICATED HOME
+    ========================================== -->
+    <section id="homeView" class="home-view hidden">
+        <div class="home-card">
+
+            <div class="home-icon">✓</div>
+
+            <h1>You're signed in</h1>
+            <p>Firebase Phone Authentication is working successfully.</p>
+
+            <div class="user-info">
+                <span class="user-info-label">Firebase UID</span>
+                <code id="userUid">—</code>
+            </div>
+
+            <div class="user-info">
+                <span class="user-info-label">Phone</span>
+                <span id="userPhone">—</span>
+            </div>
+
+            <button id="logoutButton" type="button" class="secondary-button">
+                Sign out
+            </button>
+
+        </div>
+    </section>
+
+</main>
+
+
+<!-- =========================================
+     FIREBASE + APP LOGIC (ALL IN ONE)
+========================================== -->
+<script type="module">
+
+// =========================================
+// FIREBASE SDK IMPORTS
+// =========================================
+
+import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+
+import {
+    getAuth,
+    setPersistence,
+    browserLocalPersistence,
+    RecaptchaVerifier,
+    signInWithPhoneNumber,
+    signOut,
+    onAuthStateChanged
+} from
+    "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+
+// =========================================
+// FIREBASE CONFIGURATION (AAPKI)
+// =========================================
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAA-czBDazvHoNsPiQEvLWo2PYdhY-37oE",
+    authDomain: "mychat-f9042.firebaseapp.com",
+    projectId: "mychat-f9042",
+    storageBucket: "mychat-f9042.firebasestorage.app",
+    messagingSenderId: "293067062135",
+    appId: "1:293067062135:web:b3746da488d4145436ff72",
+    measurementId: "G-SD3DXYLE0M"
+};
+
+
+// =========================================
+// INITIALIZE FIREBASE
+// =========================================
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Persistence: user refresh ke baad bhi signed-in rahe
+await setPersistence(auth, browserLocalPersistence);
+
+
+// =========================================
+// COUNTRY DATA
+// =========================================
+
+const countries = [
+    { code: "PK", name: "Pakistan", dialCode: "+92", flag: "🇵🇰" },
+    { code: "AF", name: "Afghanistan", dialCode: "+93", flag: "🇦🇫" },
+    { code: "AE", name: "United Arab Emirates", dialCode: "+971", flag: "🇦🇪" },
+    { code: "SA", name: "Saudi Arabia", dialCode: "+966", flag: "🇸🇦" },
+    { code: "GB", name: "United Kingdom", dialCode: "+44", flag: "🇬🇧" },
+    { code: "US", name: "United States", dialCode: "+1", flag: "🇺🇸" },
+    { code: "CA", name: "Canada", dialCode: "+1", flag: "🇨🇦" },
+    { code: "AU", name: "Australia", dialCode: "+61", flag: "🇦🇺" },
+    { code: "DE", name: "Germany", dialCode: "+49", flag: "🇩🇪" },
+    { code: "TR", name: "Turkey", dialCode: "+90", flag: "🇹🇷" },
+    { code: "IN", name: "India", dialCode: "+91", flag: "🇮🇳" },
+    { code: "FR", name: "France", dialCode: "+33", flag: "🇫🇷" },
+    { code: "IT", name: "Italy", dialCode: "+39", flag: "🇮🇹" },
+    { code: "ES", name: "Spain", dialCode: "+34", flag: "🇪🇸" },
+    { code: "NL", name: "Netherlands", dialCode: "+31", flag: "🇳🇱" },
+    { code: "BE", name: "Belgium", dialCode: "+32", flag: "🇧🇪" },
+    { code: "SE", name: "Sweden", dialCode: "+46", flag: "🇸🇪" },
+    { code: "NO", name: "Norway", dialCode: "+47", flag: "🇳🇴" },
+    { code: "DK", name: "Denmark", dialCode: "+45", flag: "🇩🇰" },
+    { code: "CH", name: "Switzerland", dialCode: "+41", flag: "🇨🇭" },
+    { code: "MY", name: "Malaysia", dialCode: "+60", flag: "🇲🇾" },
+    { code: "ID", name: "Indonesia", dialCode: "+62", flag: "🇮🇩" },
+    { code: "BD", name: "Bangladesh", dialCode: "+880", flag: "🇧🇩" },
+    { code: "QA", name: "Qatar", dialCode: "+974", flag: "🇶🇦" },
+    { code: "KW", name: "Kuwait", dialCode: "+965", flag: "🇰🇼" },
+    { code: "OM", name: "Oman", dialCode: "+968", flag: "🇴🇲" },
+    { code: "BH", name: "Bahrain", dialCode: "+973", flag: "🇧🇭" },
+    { code: "EG", name: "Egypt", dialCode: "+20", flag: "🇪🇬" },
+    { code: "ZA", name: "South Africa", dialCode: "+27", flag: "🇿🇦" },
+    { code: "NG", name: "Nigeria", dialCode: "+234", flag: "🇳🇬" },
+    { code: "KE", name: "Kenya", dialCode: "+254", flag: "🇰🇪" },
+    { code: "NZ", name: "New Zealand", dialCode: "+64", flag: "🇳🇿" },
+    { code: "JP", name: "Japan", dialCode: "+81", flag: "🇯🇵" },
+    { code: "KR", name: "South Korea", dialCode: "+82", flag: "🇰🇷" },
+    { code: "SG", name: "Singapore", dialCode: "+65", flag: "🇸🇬" },
+    { code: "TH", name: "Thailand", dialCode: "+66", flag: "🇹🇭" }
+];
+
+
+// =========================================
+// STATE
+// =========================================
+
+let confirmationResult = null;
+let selectedCountry = countries[0];
+let recaptchaVerifier = null;
+let resendTimer = null;
+let resendSeconds = 60;
+
+
+// =========================================
+// DOM REFS
+// =========================================
+
+const loginView        = document.getElementById("loginView");
+const otpView          = document.getElementById("otpView");
+const homeView         = document.getElementById("homeView");
+
+const phoneForm        = document.getElementById("phoneForm");
+const otpForm          = document.getElementById("otpForm");
+
+const phoneInput       = document.getElementById("phoneNumber");
+const otpInput         = document.getElementById("otpInput");
+
+const continueButton   = document.getElementById("continueButton");
+const verifyButton     = document.getElementById("verifyButton");
+
+const countrySelector  = document.getElementById("countrySelector");
+const countryDropdown  = document.getElementById("countryDropdown");
+const countrySearch    = document.getElementById("countrySearch");
+const countryList      = document.getElementById("countryList");
+
+const selectedFlag     = document.getElementById("selectedFlag");
+const selectedCode     = document.getElementById("selectedCode");
+
+const phonePreview     = document.getElementById("phonePreview");
+
+const loginMessage     = document.getElementById("loginMessage");
+const otpMessage       = document.getElementById("otpMessage");
+
+const maskedPhone      = document.getElementById("maskedPhone");
+
+const resendButton     = document.getElementById("resendButton");
+const resendTimerText  = document.getElementById("resendTimer");
+
+const backButton       = document.getElementById("backButton");
+
+const logoutButton     = document.getElementById("logoutButton");
+
+
+// =========================================
+// UI HELPERS
+// =========================================
+
+function showView(view) {
+    loginView.classList.add("hidden");
+    otpView.classList.add("hidden");
+    homeView.classList.add("hidden");
+    view.classList.remove("hidden");
+}
+
+function showMessage(element, message, type = "") {
+    element.textContent = message;
+    element.className = "message";
+    if (type) element.classList.add(type);
+}
+
+function clearMessage(element) {
+    element.textContent = "";
+    element.className = "message";
+}
+
+function setButtonLoading(button, loading) {
+    const text = button.querySelector(".button-text");
+    const loader = button.querySelector(".button-loader");
+    button.disabled = loading;
+    text.classList.toggle("hidden", loading);
+    loader.classList.toggle("hidden", !loading);
+}
+
+
+// =========================================
+// COUNTRY SELECTOR
+// =========================================
+
+function renderCountries(search = "") {
+    const query = search.trim().toLowerCase();
+
+    const filtered = countries.filter(c =>
+        c.name.toLowerCase().includes(query) ||
+        c.dialCode.includes(query) ||
+        c.code.toLowerCase().includes(query)
+    );
+
+    countryList.innerHTML = "";
+
+    if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "country-item";
+        empty.textContent = "No countries found.";
+        countryList.appendChild(empty);
+        return;
+    }
+
+    filtered.forEach(country => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "country-item";
+        item.setAttribute("role", "option");
+        item.innerHTML = `
+            <span class="country-flag">${country.flag}</span>
+            <span class="country-name">${country.name}</span>
+            <span class="country-code">${country.dialCode}</span>
+        `;
+
+        item.addEventListener("click", () => {
+            selectedCountry = country;
+            selectedFlag.textContent = country.flag;
+            selectedCode.textContent = country.dialCode;
+            phoneInput.value = "";
+            phonePreview.textContent = "";
+            closeCountryDropdown();
+            phoneInput.focus();
+        });
+
+        countryList.appendChild(item);
+    });
+}
+
+function openCountryDropdown() {
+    countryDropdown.classList.remove("hidden");
+    countrySelector.setAttribute("aria-expanded", "true");
+    countrySearch.value = "";
+    renderCountries();
+    setTimeout(() => countrySearch.focus(), 0);
+}
+
+function closeCountryDropdown() {
+    countryDropdown.classList.add("hidden");
+    countrySelector.setAttribute("aria-expanded", "false");
+}
+
+countrySelector.addEventListener("click", () => {
+    if (countryDropdown.classList.contains("hidden")) {
+        openCountryDropdown();
+    } else {
+        closeCountryDropdown();
+    }
+});
+
+countrySearch.addEventListener("input", () => {
+    renderCountries(countrySearch.value);
+});
+
+document.addEventListener("click", e => {
+    if (!countryDropdown.contains(e.target) &&
+        !countrySelector.contains(e.target)) {
+        closeCountryDropdown();
+    }
+});
+
+
+// =========================================
+// PHONE FORMATTING
+// =========================================
+
+phoneInput.addEventListener("input", () => {
+    let value = phoneInput.value.replace(/\D/g, "");
+    if (value.length > 15) value = value.slice(0, 15);
+    phoneInput.value = value;
+
+    if (value.length >= 7) {
+        phonePreview.textContent = `Full number: ${selectedCountry.dialCode}${value}`;
+    } else {
+        phonePreview.textContent = "";
+    }
+});
+
+function normalizePhoneNumber() {
+    let number = phoneInput.value.replace(/\D/g, "");
+    const dial = selectedCountry.dialCode.replace("+", "");
+
+    if (number.startsWith(dial)) {
+        number = number.slice(dial.length);
+    }
+
+    if (number.length < 6 || number.length > 14) {
+        return null;
+    }
+
+    return `${selectedCountry.dialCode}${number}`;
+}
+
+function maskPhoneNumber(phone) {
+    if (!phone) return "";
+    if (phone.length <= 7) return phone;
+
+    const visibleStart = phone.slice(0, 4);
+    const visibleEnd = phone.slice(-2);
+    const hiddenLength = Math.max(3, phone.length - 6);
+
+    return visibleStart + "•".repeat(hiddenLength) + visibleEnd;
+}
+
+
+// =========================================
+// RECAPTCHA
+// =========================================
+
+function createRecaptcha() {
+    if (recaptchaVerifier) return recaptchaVerifier;
+
+    recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+        callback: () => {},
+        "expired-callback": () => {
+            showMessage(loginMessage,
+                "Security verification expired. Please try again.",
+                "error");
+            resetRecaptcha();
+        }
+    });
+
+    return recaptchaVerifier;
+}
+
+async function resetRecaptcha() {
+    if (!recaptchaVerifier) return;
+    try {
+        await recaptchaVerifier.clear();
+    } catch (err) {
+        console.warn("Could not clear reCAPTCHA:", err);
+    }
+    recaptchaVerifier = null;
+}
+
+
+// =========================================
+// SEND OTP
+// =========================================
+
+async function sendOtp() {
+    clearMessage(loginMessage);
+
+    const phoneNumber = normalizePhoneNumber();
+
+    if (!phoneNumber) {
+        showMessage(loginMessage, "Please enter a valid phone number.", "error");
+        phoneInput.focus();
+        return;
+    }
+
+    setButtonLoading(continueButton, true);
+
+    try {
+        const verifier = createRecaptcha();
+
+        confirmationResult = await signInWithPhoneNumber(
+            auth, phoneNumber, verifier
+        );
+
+        maskedPhone.textContent = maskPhoneNumber(phoneNumber);
+        showView(otpView);
+        otpInput.value = "";
+        otpInput.focus();
+        startResendTimer();
+
+    } catch (error) {
+        console.error("Phone auth error:", error);
+        showMessage(loginMessage, getFirebaseErrorMessage(error), "error");
+        await resetRecaptcha();
+    } finally {
+        setButtonLoading(continueButton, false);
+    }
+}
+
+
+// =========================================
+// VERIFY OTP
+// =========================================
+
+async function verifyOtp() {
+    clearMessage(otpMessage);
+
+    const code = otpInput.value.replace(/\D/g, "");
+
+    if (!confirmationResult) {
+        showMessage(otpMessage,
+            "Your verification session expired. Please request a new code.",
+            "error");
+        return;
+    }
+
+    if (!/^\d{6}$/.test(code)) {
+        showMessage(otpMessage, "Enter the 6-digit verification code.", "error");
+        otpInput.focus();
+        return;
+    }
+
+    setButtonLoading(verifyButton, true);
+
+    try {
+        const userCredential = await confirmationResult.confirm(code);
+        const user = userCredential.user;
+
+        console.log("Firebase auth successful:", user.uid);
+
+        confirmationResult = null;
+        stopResendTimer();
+        showAuthenticatedUser(user);
+
+    } catch (error) {
+        console.error("OTP verification error:", error);
+        showMessage(otpMessage, getFirebaseErrorMessage(error), "error");
+    } finally {
+        setButtonLoading(verifyButton, false);
+    }
+}
+
+
+// =========================================
+// RESEND OTP
+// =========================================
+
+async function resendOtp() {
+    if (resendButton.disabled) return;
+
+    const phoneNumber = normalizePhoneNumber();
+
+    if (!phoneNumber) {
+        showMessage(otpMessage,
+            "Please go back and enter your phone number again.", "error");
+        return;
+    }
+
+    resendButton.disabled = true;
+    clearMessage(otpMessage);
+
+    try {
+        await resetRecaptcha();
+        const verifier = createRecaptcha();
+
+        confirmationResult = await signInWithPhoneNumber(
+            auth, phoneNumber, verifier
+        );
+
+        showMessage(otpMessage,
+            "A new verification code has been sent.", "success");
+
+        startResendTimer();
+
+    } catch (error) {
+        console.error("Resend OTP error:", error);
+        showMessage(otpMessage, getFirebaseErrorMessage(error), "error");
+        resendButton.disabled = false;
+        await resetRecaptcha();
+    }
+}
+
+
+// =========================================
+// RESEND TIMER
+// =========================================
+
+function startResendTimer() {
+    stopResendTimer();
+    resendSeconds = 60;
+    resendButton.disabled = true;
+    updateResendTimer();
+
+    resendTimer = setInterval(() => {
+        resendSeconds--;
+        updateResendTimer();
+
+        if (resendSeconds <= 0) {
+            stopResendTimer();
+            resendButton.disabled = false;
+            resendTimerText.textContent = "You can request another code.";
+        }
+    }, 1000);
+}
+
+function updateResendTimer() {
+    resendTimerText.innerHTML =
+        `Resend code in <strong>${resendSeconds}s</strong>`;
+}
+
+function stopResendTimer() {
+    if (resendTimer) {
+        clearInterval(resendTimer);
+        resendTimer = null;
+    }
+}
+
+
+// =========================================
+// BACK TO PHONE
+// =========================================
+
+function goBackToPhone() {
+    stopResendTimer();
+    confirmationResult = null;
+    clearMessage(otpMessage);
+    showView(loginView);
+    phoneInput.focus();
+}
+
+
+// =========================================
+// AUTHENTICATED USER
+// =========================================
+
+function showAuthenticatedUser(user) {
+    document.getElementById("userUid").textContent = user.uid;
+    document.getElementById("userPhone").textContent =
+        user.phoneNumber || "Not available";
+    showView(homeView);
+}
+
+
+// =========================================
+// LOGOUT
+// =========================================
+
+logoutButton.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+    try {
+        await signOut(auth);
+    } catch (error) {
+        console.error("Sign out failed:", error);
+        alert("Could not sign out. Please try again.");
+    } finally {
+        logoutButton.disabled = false;
+    }
+});
+
+
+// =========================================
+// AUTH STATE LISTENER
+// =========================================
+
+onAuthStateChanged(auth, user => {
+    if (user) {
+        showAuthenticatedUser(user);
+    } else {
+        showView(loginView);
+    }
+});
+
+
+// =========================================
+// EVENT LISTENERS
+// =========================================
+
+phoneForm.addEventListener("submit", e => {
+    e.preventDefault();
+    sendOtp();
+});
+
+otpForm.addEventListener("submit", e => {
+    e.preventDefault();
+    verifyOtp();
+});
+
+resendButton.addEventListener("click", resendOtp);
+backButton.addEventListener("click", goBackToPhone);
+
+otpInput.addEventListener("input", () => {
+    otpInput.value = otpInput.value.replace(/\D/g, "").slice(0, 6);
+});
+
+
+// =========================================
+// FIREBASE ERROR MESSAGES
+// =========================================
+
+function getFirebaseErrorMessage(error) {
+    const code = error?.code || "";
+
+    const messages = {
+        "auth/invalid-phone-number": "The phone number is not valid.",
+        "auth/missing-phone-number": "Please enter your phone number.",
+        "auth/too-many-requests": "Too many attempts. Please wait and try again later.",
+        "auth/quota-exceeded": "SMS quota has been exceeded. Please try again later.",
+        "auth/invalid-verification-code": "The verification code is incorrect.",
+        "auth/code-expired": "The verification code has expired. Request a new code.",
+        "auth/session-expired": "Your verification session expired. Please request a new code.",
+        "auth/captcha-check-failed": "Security verification failed. Please try again.",
+        "auth/invalid-app-credential": "Firebase could not verify this application. Check your authorized domain and reCAPTCHA setup.",
+        "auth/app-not-authorized": "This domain is not authorized in Firebase Authentication.",
+        "auth/operation-not-allowed": "Phone Authentication is not enabled in Firebase Console.",
+        "auth/network-request-failed": "Network error. Check your internet connection.",
+        "auth/user-disabled": "This account has been disabled.",
+        "auth/credential-already-in-use": "This phone number is already associated with another account."
+    };
+
+    return messages[code] || error?.message || "Authentication failed. Please try again.";
+}
+
+
+// =========================================
+// INITIAL COUNTRY
+// =========================================
+
+selectedFlag.textContent = selectedCountry.flag;
+selectedCode.textContent = selectedCountry.dialCode;
+renderCountries();
+
+</script>
+
+</body>
+</html>
