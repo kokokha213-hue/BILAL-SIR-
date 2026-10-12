@@ -666,7 +666,8 @@ const countries = [
 
 let confirmationResult = null;
 let selectedCountry = countries[0];
-let recaptchaVerifier = null;
+let recaptchaVerifier = null;      // single active verifier
+let isSendingOtp = false;          // duplicate-click guard
 let resendTimer = null;
 let resendSeconds = 60;
 
@@ -710,6 +711,8 @@ const backButton       = document.getElementById("backButton");
 
 const logoutButton     = document.getElementById("logoutButton");
 
+const recaptchaContainer = document.getElementById("recaptcha-container");
+
 
 // =========================================
 // UI HELPERS
@@ -740,6 +743,8 @@ function setButtonLoading(button, loading) {
     text.classList.toggle("hidden", loading);
     loader.classList.toggle("hidden", !loading);
 }
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 
 // =========================================
@@ -867,34 +872,64 @@ function maskPhoneNumber(phone) {
 
 
 // =========================================
-// RECAPTCHA
+// RECAPTCHA (FIXED)
+// =========================================
+//
+// FIX:
+//  1. Sirf ek active verifier — agar already exist karta hai to wahi return.
+//  2. resetRecaptcha() clear() ke baad container ko manually empty karta hai
+//     aur thoda wait karta hai taake Firebase ka iframe DOM se hat jaye.
+//  3. Naya verifier sirf tab banta hai jab container bilkul saaf ho.
+//
 // =========================================
 
+async function resetRecaptcha() {
+    // Step 1: Existing verifier ko clear karo
+    if (recaptchaVerifier) {
+        try {
+            await recaptchaVerifier.clear();
+        } catch (err) {
+            console.warn("reCAPTCHA clear() warning:", err);
+        }
+        recaptchaVerifier = null;
+    }
+
+    // Step 2: Container ko manually saaf karo — Firebase kabhi kabhi
+    // apna iframe chhor jata hai jo "already rendered" error deta hai.
+    if (recaptchaContainer) {
+        recaptchaContainer.innerHTML = "";
+    }
+
+    // Step 3: Ek tick wait karo taake DOM settle ho jaye
+    // (Firebase internally asynchronous DOM cleanup karta hai)
+    await sleep(0);
+}
+
 function createRecaptcha() {
-    if (recaptchaVerifier) return recaptchaVerifier;
+    // Agar already verifier hai to wahi reuse karo — naya mat banao
+    if (recaptchaVerifier) {
+        return recaptchaVerifier;
+    }
+
+    // Safety: agar container me koi stale widget hai to pehle hata do
+    if (recaptchaContainer && recaptchaContainer.childElementCount > 0) {
+        recaptchaContainer.innerHTML = "";
+    }
 
     recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
-        callback: () => {},
-        "expired-callback": () => {
+        callback: () => {
+            // reCAPTCHA solved — Firebase khud handle karega
+        },
+        "expired-callback": async () => {
             showMessage(loginMessage,
                 "Security verification expired. Please try again.",
                 "error");
-            resetRecaptcha();
+            await resetRecaptcha();
         }
     });
 
     return recaptchaVerifier;
-}
-
-async function resetRecaptcha() {
-    if (!recaptchaVerifier) return;
-    try {
-        await recaptchaVerifier.clear();
-    } catch (err) {
-        console.warn("Could not clear reCAPTCHA:", err);
-    }
-    recaptchaVerifier = null;
 }
 
 
@@ -903,6 +938,9 @@ async function resetRecaptcha() {
 // =========================================
 
 async function sendOtp() {
+    // Duplicate-click guard
+    if (isSendingOtp) return;
+
     clearMessage(loginMessage);
 
     const phoneNumber = normalizePhoneNumber();
@@ -913,9 +951,12 @@ async function sendOtp() {
         return;
     }
 
+    isSendingOtp = true;
     setButtonLoading(continueButton, true);
 
     try {
+        // Purana verifier safely cleanup karo, phir naya banao
+        await resetRecaptcha();
         const verifier = createRecaptcha();
 
         confirmationResult = await signInWithPhoneNumber(
@@ -931,8 +972,10 @@ async function sendOtp() {
     } catch (error) {
         console.error("Phone auth error:", error);
         showMessage(loginMessage, getFirebaseErrorMessage(error), "error");
+        // Fail hone par bhi verifier cleanup karo
         await resetRecaptcha();
     } finally {
+        isSendingOtp = false;
         setButtonLoading(continueButton, false);
     }
 }
@@ -970,6 +1013,9 @@ async function verifyOtp() {
 
         confirmationResult = null;
         stopResendTimer();
+        // Successful login par bhi verifier cleanup — warna next login
+        // pe "already rendered" aa sakta hai.
+        await resetRecaptcha();
         showAuthenticatedUser(user);
 
     } catch (error) {
@@ -986,7 +1032,7 @@ async function verifyOtp() {
 // =========================================
 
 async function resendOtp() {
-    if (resendButton.disabled) return;
+    if (resendButton.disabled || isSendingOtp) return;
 
     const phoneNumber = normalizePhoneNumber();
 
@@ -996,10 +1042,12 @@ async function resendOtp() {
         return;
     }
 
+    isSendingOtp = true;
     resendButton.disabled = true;
     clearMessage(otpMessage);
 
     try {
+        // Pehle purana verifier fully clear karo
         await resetRecaptcha();
         const verifier = createRecaptcha();
 
@@ -1017,6 +1065,8 @@ async function resendOtp() {
         showMessage(otpMessage, getFirebaseErrorMessage(error), "error");
         resendButton.disabled = false;
         await resetRecaptcha();
+    } finally {
+        isSendingOtp = false;
     }
 }
 
@@ -1060,10 +1110,12 @@ function stopResendTimer() {
 // BACK TO PHONE
 // =========================================
 
-function goBackToPhone() {
+async function goBackToPhone() {
     stopResendTimer();
     confirmationResult = null;
     clearMessage(otpMessage);
+    // Verifier cleanup taake next attempt pe conflict na ho
+    await resetRecaptcha();
     showView(loginView);
     phoneInput.focus();
 }
@@ -1089,6 +1141,8 @@ logoutButton.addEventListener("click", async () => {
     logoutButton.disabled = true;
     try {
         await signOut(auth);
+        // Logout par bhi verifier cleanup — taake next login clean ho
+        await resetRecaptcha();
     } catch (error) {
         console.error("Sign out failed:", error);
         alert("Could not sign out. Please try again.");
